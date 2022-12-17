@@ -31,10 +31,10 @@ def notify_full():
 # a bin must be hit to considered covered
 @CoverPoint("top.i_data",xf = lambda x : x.i_data.value, bins = list(range(2**g_width)), at_least=1)
 def number_cover(dut):
-	pass
+	covered_number.append(dut.i_data.value)
 
 async def init(dut,units=1):
-	dut.i_data = 0
+	dut.i_data.value = 0
 	await Timer(units,'ns')
 	dut._log.info("the core was initialized")
 
@@ -48,6 +48,8 @@ async def test(dut):
 	while (full != True):
 
 		data = random.randint(0,2**g_width-1)
+		while(data in covered_number):
+			data = random.randint(0,2**g_width-1)
 		dut.i_data.value = data
 		expected_value = parity_bit(g_parity_type,data)
 
