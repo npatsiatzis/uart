@@ -13,12 +13,9 @@ rtl_dir = tests_dir                                    #path to hdl folder where
 
       
 #run tests with generic values for length
-list_generics = []
-for i in range(4,13,4):
-    list_generics.append({"g_word_width" : str(i),"g_sys_clk" : str(10**8)})
-    list_generics.append({"g_word_width" : str(i),"g_sys_clk" : str(2*10**8)})
-@pytest.mark.parametrize("parameter", list_generics)
-def test_uart(parameter):
+@pytest.mark.parametrize("g_word_width", [str(i) for i in range(4,13,4)])
+@pytest.mark.parametrize("g_sys_clk", [str(10**8),str(2*10**8)])
+def test_uart(g_word_width,g_sys_clk):
 
     module = "test_uart"
     toplevel = "uart"   
@@ -27,6 +24,9 @@ def test_uart(parameter):
         os.path.join(rtl_dir, "uart.vhd"),
         ]
 
+    parameter = {}
+    parameter['g_word_width'] = g_word_width
+    parameter['g_sys_clk'] = g_sys_clk
 
 
     run(
@@ -46,8 +46,8 @@ def test_uart(parameter):
 
 
 #run tests with generic values for length
-@pytest.mark.parametrize("parameter", [{"g_width": str(i)} for i in range(4,9,4)])
-def test_parity(parameter):
+@pytest.mark.parametrize("g_width", [str(i) for i in range(4,9,4)])
+def test_parity(g_width):
 
     module = "testbench_parity"
     toplevel = "parity"   
@@ -55,7 +55,8 @@ def test_parity(parameter):
         os.path.join(rtl_dir, "parity.vhd"),
         ]
 
-
+    parameter = {}
+    parameter['g_width'] = g_width
 
     run(
         python_search=[tests_dir],                         #where to search for all the python test files
