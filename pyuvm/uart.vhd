@@ -3,10 +3,10 @@ use ieee.std_logic_1164.all;
 
 entity uart is
 	generic(
-		g_sys_clk : natural :=50_000_000;		--system clock rate in Hz
-		g_baud : natural :=19_200;				--baud rate in bits/sec
+		g_sys_clk : natural :=40_000_000;		--system clock rate in Hz
+		g_baud : natural :=256000;				--baud rate in bits/sec
 		g_oversample : natural :=16; 			--oversample rate
-		g_word_width : natural :=8;				--width of the data to transmit 
+		g_word_width : natural :=4;				--width of the data to transmit 
 		g_parity_type : std_ulogic := '0');		--'0' for even parity, '1' for odd
 	port(
 		i_clk : in std_ulogic;					--system clock
@@ -142,7 +142,7 @@ begin
 		variable r_rx_data : std_ulogic_vector(g_word_width +1 downto 0);		 
 	begin
 		if(i_rst = '1') then
-			o_rx_busy <= '1';					--rx busy; not avaiable to receive
+			o_rx_busy <= '0';					--rx busy; not avaiable to receive
 			o_rx_error <= '0';					--initialize error flag
 			o_rx_data <= (others => '0');		--initialize output data
 			r_rx_data := (others => '0');		--clear received data
@@ -190,6 +190,7 @@ begin
 							else
 								r_state_rx <= IDLE;
 								cnt_digits_received := 0;
+								o_rx_busy <= '0';
 								o_rx_data <= r_rx_data(r_rx_data'high-2 downto 0);
 								--verify the stop bit
 								if(i_rx /= '1') then

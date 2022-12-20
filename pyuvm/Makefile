@@ -15,7 +15,7 @@ VHDL_SOURCES += $(PWD)/uart.vhd
 
 test:
 		rm -rf sim_build
-		$(MAKE) sim MODULE=testbench TOPLEVEL=uart
+		$(MAKE) sim MODULE=testbench_uart TOPLEVEL=uart
 
 parity:
 		rm -rf sim_build
