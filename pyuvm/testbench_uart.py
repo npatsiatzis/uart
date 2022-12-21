@@ -1,4 +1,5 @@
 from cocotb.triggers import FallingEdge
+from cocotb_coverage import crv
 from cocotb.clock import Clock
 from pyuvm import *
 import random
@@ -11,6 +12,11 @@ period_ns = 10**9 / g_sys_clk
 g_word_width = int(cocotb.top.g_word_width)
 covered_values = []
 
+class crv_inputs(crv.Randomized):
+    def __init__(self,tx_data):
+        crv.Randomized.__init__(self)
+        self.tx_data = tx_data
+        self.add_rand("tx_data",list(range(2**g_word_width)))
 
 # Sequence classes
 class SeqItem(uvm_sequence_item):
@@ -18,11 +24,11 @@ class SeqItem(uvm_sequence_item):
     def __init__(self, name, i_tx_en,i_tx_data):
         super().__init__(name)
         self. i_tx_en = i_tx_en
-        self.i_tx_data = i_tx_data
+        self.i_crv = crv_inputs(i_tx_data)
 
     def randomize_operands(self):
         self.i_tx_en = 1
-        self.i_tx_data = random.randint(0,2**g_word_width-1)
+        self.i_crv.randomize()
 
     def randomize(self):
         self.randomize_operands()
@@ -35,9 +41,9 @@ class RandomSeq(uvm_sequence):
             data_tr = SeqItem("data_tr", None,None)
             await self.start_item(data_tr)
             data_tr.randomize_operands()
-            while((data_tr.i_tx_data) in covered_values):
+            while((data_tr.i_crv.tx_data) in covered_values):
                 data_tr.randomize_operands()
-            covered_values.append((data_tr.i_tx_data))
+            covered_values.append((data_tr.i_crv.tx_data))
             await self.finish_item(data_tr)
             await FallingEdge(cocotb.top.o_tx_busy)
 
@@ -64,7 +70,7 @@ class Driver(uvm_driver):
         await self.launch_tb()
         while True:
             data = await self.seq_item_port.get_next_item()
-            await self.bfm.send_data((data.i_tx_en,data.i_tx_data))
+            await self.bfm.send_data((data.i_tx_en,data.i_crv.tx_data))
             result = await self.bfm.get_result()
             self.ap.write(result)
             data.result = result

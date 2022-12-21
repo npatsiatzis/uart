@@ -13,7 +13,7 @@ rtl_dir = tests_dir                                    #path to hdl folder where
 
       
 #run tests with generic values for length
-@pytest.mark.parametrize("g_word_width", [str(i) for i in range(4,9,4)])
+@pytest.mark.parametrize("g_word_width", [str(i) for i in range(2,5,2)])
 @pytest.mark.parametrize("g_sys_clk", [str(4*10**7),str(5*10**7)])
 def test_uart(g_word_width,g_sys_clk):
 
