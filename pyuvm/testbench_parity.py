@@ -37,7 +37,6 @@ class SeqItem(uvm_sequence_item):
 
     def randomize_operands(self):
         self.i_crv.randomize()
-        # self.data = random.randint(0,2**g_width-1)
 
     def __eq__(self, other):
         same = self.data == other.data 

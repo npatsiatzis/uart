@@ -4,7 +4,7 @@ from cocotb.clock import Clock
 from cocotb.triggers import Timer,RisingEdge,FallingEdge,ClockCycles,ReadWrite
 from cocotb.result import TestFailure
 import random
-from cocotb_coverage.coverage import CoverCross,CoverPoint,coverage_db
+from cocotb_coverage.coverage import CoverPoint,coverage_db
 
 covered_valued = []
 
@@ -16,13 +16,9 @@ g_word_width = int(cocotb.top.g_word_width)
 g_parity_type = int(cocotb.top.g_parity_type)
 
 full = False
-def notify(p):
+def notify():
 	global full
-	if(p == 25 or p == 50 or p == 75):
-		print("Reached {}% coverage!".format(p))
-	elif(p == 100):
-		print("Reached {}% coverage!".format(p))
-		full = True
+	full = True
 
 
 async def connect_tx_rx(dut):
@@ -72,10 +68,9 @@ async def test(dut):
 		dut.i_tx_en.value = 0
 		await FallingEdge(dut.o_rx_busy)
 		assert not (expected_value != int(dut.o_rx_data.value)),"Different expected to actual read data"
-		coverage_db["top.i_tx_data"].add_threshold_callback(notify(25), 25)
-		coverage_db["top.i_tx_data"].add_threshold_callback(notify(50), 50)
-		coverage_db["top.i_tx_data"].add_threshold_callback(notify(75), 75)
-		coverage_db["top.i_tx_data"].add_threshold_callback(notify(100), 100)
+		coverage_db["top.i_tx_data"].add_threshold_callback(notify, 100)
 		number_cover(dut)
+	coverage_db.report_coverage(cocotb.log.info,bins=True)
+	coverage_db.export_to_xml(filename="coverage.xml")
 
 

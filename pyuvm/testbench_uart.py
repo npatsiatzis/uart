@@ -6,11 +6,25 @@ import random
 import cocotb
 import pyuvm
 from utils import UartBfm
+from cocotb_coverage.coverage import CoverPoint,coverage_db
 
 g_sys_clk = int(cocotb.top.g_sys_clk)
 period_ns = 10**9 / g_sys_clk
 g_word_width = int(cocotb.top.g_word_width)
 covered_values = []
+
+
+full = False
+def notify():
+    global full
+    full = True
+
+# at_least = value is superfluous, just shows how you can determine the amount of times that
+# a bin must be hit to considered covered
+@CoverPoint("top.i_tx_data",xf = lambda x : x, bins = list(range(2**g_word_width)), at_least=1)
+def number_cover(x):
+    pass
+
 
 class crv_inputs(crv.Randomized):
     def __init__(self,tx_data):
@@ -84,6 +98,7 @@ class Coverage(uvm_subscriber):
 
     def write(self, data):
         (i_tx_en,i_tx_data) = data
+        number_cover(i_tx_data)
         if(int(i_tx_data) not in self.cvg):
             self.cvg.add(int(i_tx_data))
 
@@ -192,4 +207,7 @@ class Test(uvm_test):
         self.raise_objection()
         cocotb.start_soon(Clock(self.bfm.dut.i_clk, period_ns, units="ns").start())
         await self.test_all.start()
+
+        coverage_db.report_coverage(cocotb.log.info,bins=True)
+        coverage_db.export_to_xml(filename="coverage.xml")
         self.drop_objection()
