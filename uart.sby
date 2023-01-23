@@ -1,0 +1,18 @@
+[tasks]
+task_bmc
+
+[options]
+task_bmc: mode bmc
+task_bmc: depth 100	
+
+[engines]
+task_bmc: smtbmc
+
+[script]
+ghdl --std=08 parity.vhd uart.vhd uart.psl -e uart
+prep -top uart
+
+[files]
+uart.psl
+parity.vhd
+uart.vhd

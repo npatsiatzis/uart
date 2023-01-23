@@ -1,0 +1,157 @@
+library ieee;
+use ieee.numeric_std.all;
+
+vunit formal_test(uart(rtl)) {
+
+	default clock is rising_edge(i_clk);
+
+	--key checks(contract) for UART TX functionality
+	--1) correct data are transmitted
+	--2) data are transmitted in correct order
+
+	signal data_to_send : std_ulogic_vector(g_word_width-1 downto 0);
+	
+	type t_state is (IDLE,START_BIT,S0,S1,S2,S3,S4,S5,S6,S7,PARITY_BIT,END_BIT);
+	signal send_seq : t_state;
+
+	process (i_clk)
+	begin
+		if(rising_edge(i_clk)) then
+			if(i_tx_en = '1' and o_tx_busy = '0') then
+				data_to_send <= i_tx_data;
+			end if;
+		end if;
+	end process;
+
+
+	process(i_clk)
+	begin
+		if(i_rst = '1') then
+			send_seq <= IDLE;
+		elsif(rising_edge(i_clk)) then
+			case send_seq is
+				when IDLE =>
+					if(i_tx_en and (not o_tx_busy)) then
+						send_seq <= START_BIT;
+					end if;
+				when START_BIT =>
+					if(r_baud_pulse) then
+						send_seq <= S0;
+					end if;
+				when S0 =>
+					if(r_baud_pulse) then
+						send_seq <= S1;
+					end if;
+				when S1 =>
+					if(r_baud_pulse) then
+						send_seq <= S2;
+					end if;
+				when S2 =>
+					if(r_baud_pulse) then
+						send_seq <= S3;
+					end if;
+				when S3 =>
+					if(r_baud_pulse) then
+						send_seq <= S4;
+					end if;
+				when S4 =>
+					if(r_baud_pulse) then
+						send_seq <= S5;
+					end if;
+				when S5 =>
+					if(r_baud_pulse) then
+						send_seq <= S6;
+					end if;
+				when S6 =>
+					if(r_baud_pulse) then
+						send_seq <= S7;
+					end if;
+				when S7 =>
+					if(r_baud_pulse) then
+						send_seq <= PARITY_BIT;
+					end if;
+				when PARITY_BIT =>
+					if(r_baud_pulse) then
+						send_seq <= END_BIT;
+					end if;
+				when END_BIT =>
+					if(r_baud_pulse) then
+						send_seq <= IDLE;
+					end if;
+				when others =>
+					send_seq <= IDLE;
+			end case;
+		end if;
+	end process;
+
+	--#####################################################
+
+	-------------------
+	--ASSERT PROPERTIES
+	-------------------
+
+	-- UART TX
+	--check counter are in their valid range
+	counter_baud_range: assert always {cnt_baud >=0 and cnt_baud <= range_baud};
+	counter_oversample_range: assert always {cnt_oversample >=0 and cnt_oversample <= range_oversample};
+	
+	--check that when bits are being sent, tx_busy is asserted
+	busy_when_digits: assert always {cnt_digits_send > 0} |-> {o_tx_busy = '1'};
+	
+	--check that when in IDLE state, busy is deasserted and tx is asserted
+	idle_cond: assert always {r_state_tx = IDLE} |-> {o_tx = '1' : o_tx_busy = '0'};
+	--check that when in TRANSMIT, busy is always asserted
+	busy_when_transmit: assert always {r_state_tx /= IDLE} |-> {o_tx_busy = '1'};
+
+	--check behavior of counters, always either 0 or incrementing from previous cycle
+	counter_baud_behav: assert always {cnt_baud = 0 or cnt_baud = (prev(cnt_baud)+1)};
+	counter_oversample_behav: assert always {cnt_oversample = 0 or cnt_oversample = (prev(cnt_oversample)+1)};
+
+	--check that TX transmits the correct data in correct order
+	seq0: assert always {send_seq = S0} |=> {o_tx = '0'}; 
+	seq1: assert always {send_seq = S1} |=> {o_tx = data_to_send(0)};
+	seq2: assert always {send_seq = S2} |=> {o_tx = data_to_send(1)};
+	seq3: assert always {send_seq = S3} |=> {o_tx = data_to_send(2)};
+	seq4: assert always {send_seq = S4} |=> {o_tx = data_to_send(3)}; 
+	seq5: assert always {send_seq = S5} |=> {o_tx = data_to_send(4)};
+	seq6: assert always {send_seq = S6} |=> {o_tx = data_to_send(5)};
+	seq7: assert always {send_seq = S7} |=> {o_tx = data_to_send(6)};
+	seq8: assert always {send_seq = PARITY_BIT} |=> {o_tx = data_to_send(7)};
+	seq9: assert always {send_seq = END_BIT} |=> {o_tx = xor(data_to_send)};
+	seq10: assert always {send_seq = IDLE and prev(send_seq) = END_BIT} |=> {o_tx = '1'};
+
+	--#####################################################
+
+	-------------------
+	--ASSUME PROPERTIES
+	-------------------
+	signal zero_vec : std_ulogic_vector(r_tx_data'range) := (others => '0');
+	-- UART TX
+	assume {i_rst = '0'; true[*]; i_rst = '1'; true[*]; i_rst = '1'};
+
+	assume {r_state_tx = IDLE};
+	assume {r_state_rx = IDLE};
+	assume {o_tx_busy = '0'};
+	assume {cnt_baud = 0};
+	assume {r_baud_pulse = '0'};
+	assume {cnt_oversample = 0};
+	assume {cnt_digits_send = 0};
+	assume {cnt_oversample_pulses = 0};
+	assume {cnt_digits_received = 0};
+	assume {w_tx_parity = '0'};
+
+	--assume {r_tx_data = zero_vec};
+	--assume {r_rx_data = zero_vec};
+	assume {send_seq = IDLE};
+
+	assume always {i_tx_en and o_tx_busy} |-> {stable(i_tx_en) && stable(i_tx_data)};
+
+	--#####################################################
+
+	------------------
+	--COVER PROPERTIES
+	------------------
+
+	cover {true[*];o_rx_busy = '1'; true[*]; o_rx_busy = '0'};
+	--cover_transmit_to_idle: cover { r_state_tx = TRANSMIT; r_baud_pulse = '1' [-> 11]; r_state_tx = IDLE};
+}
