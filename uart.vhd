@@ -3,7 +3,7 @@ use ieee.std_logic_1164.all;
 
 entity uart is
 	generic(
-		g_sys_clk : natural :=40_000_000;		--system clock rate in Hz
+		g_sys_clk : natural :=40000000;		--system clock rate in Hz
 		g_baud : natural :=256000;				--baud rate in bits/sec
 		g_oversample : natural :=16; 			--oversample rate
 		g_word_width : natural :=8;				--width of the data to transmit 
@@ -96,6 +96,7 @@ begin
 			r_state_tx <= IDLE;					--initialize tx FSM state
 			cnt_digits_send <=0;				--initialize write pointer
 			r_tx_data <= (others => '0');		--clear data to send 
+			o_tx <= '1';						--keep line raised
 		elsif(rising_edge(i_clk)) then
 			case r_state_tx is 
 				when IDLE =>
@@ -104,7 +105,7 @@ begin
 						--include start ('0') , parity and stop ('1') bits
 						r_tx_data <= '1' & w_tx_parity & i_tx_data & '0';
 						r_state_tx <= TRANSMIT;
-						cnt_digits_send <=1;
+						cnt_digits_send <=0;
 						o_tx_busy <= '1';
 					end if;
 				when TRANSMIT =>
@@ -159,13 +160,14 @@ begin
 					if(r_oversample_pulse = '1') then
 						--if the line is pulled low 
 						if(i_rx = '0') then
-							o_rx_busy <= '1';
+							
 							--sample again at the middle of the cycle to 
 							--minimize the probability of metastability
 							if(cnt_oversample_pulses < g_oversample/2) then
 								cnt_oversample_pulses <= cnt_oversample_pulses +1;
 								r_state_rx <= IDLE;
 							else
+								o_rx_busy <= '1';
 								cnt_oversample_pulses <= 0;
 								r_state_rx <= RECEIVE;
 							end if;
