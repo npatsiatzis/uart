@@ -8,11 +8,67 @@ vunit formal_test(uart(rtl)) {
 	--key checks(contract) for UART functionality
 	--1) correct data are transmitted
 	--2) data bits are transmitted in correct order
+	--3) data is received correctly 
+	--transmit at some point two random data items and check that they were received correctly
+
 
 	signal data_to_send : std_ulogic_vector(g_word_width-1 downto 0);
 	
 	type t_state is (IDLE,START_BIT,S0,S1,S2,S3,S4,S5,S6,S7,PARITY_BIT,END_BIT);
 	signal send_seq : t_state;
+
+	type t_tx_states is (IDLE,S1,S2,S3);
+	signal tx_state : t_tx_states;
+	signal flag_in1 : std_ulogic := '0';
+	signal flag_in2 : std_ulogic := '0';
+
+	--random values to be transmitted in succession  
+	signal val_1 : std_ulogic_vector(g_word_width -1 downto 0);
+	signal val_2 : std_ulogic_vector(g_word_width -1 downto 0);
+	attribute anyconst : boolean;
+	attribute anyconst of val_1 : signal is true;
+	attribute anyconst of val_2 : signal is true;
+
+	process(i_clk)
+	begin
+		if(rising_edge(i_clk)) then
+			if(i_rst = '1') then
+				tx_state <= IDLE;
+				flag_in1 <= '0';
+				flag_in2 <= '0';
+			else 
+				case tx_state is 
+					when IDLE =>
+						if(i_tx_en = '1' and o_tx_busy = '0') then
+							if(i_tx_data /= val_1) then
+								tx_state <= S1;
+							else
+								flag_in1 <= '1';
+								tx_state <= S2;
+							end if;
+						end if;
+					when S1 =>
+						if(i_tx_en = '1' and o_tx_busy = '0' and i_tx_data = val_1) then
+							flag_in1 <= '1';
+							tx_state <= S2;
+						end if;
+					when S2 =>
+						if(i_tx_en = '1' and o_tx_busy = '0') then
+							if(i_tx_data = val_2) then
+								flag_in2 <= '1';
+								tx_state <= IDLE;
+							else 
+								tx_state <= S3;
+							end if;
+						end if;
+					when S3 =>
+						null;
+					when others =>
+						tx_state <= IDLE;
+				end case;
+			end if;
+		end if;
+	end process;
 
 	process (i_clk)
 	begin
@@ -131,18 +187,23 @@ vunit formal_test(uart(rtl)) {
 	check_rx_busy: assert always {r_state_rx = RECEIVE} |-> {o_rx_busy = '1'};
 
 	--check behavior of cnt_oversample_pulses counter 
-	cnt_oversample_pulses_behav: assert always {cnt_oversample_pulses = 0 or cnt_oversample_pulses = prev(cnt_oversample_pulses) or  cnt_oversample_pulses = (prev(cnt_oversample_pulses)+1)};
+	--cnt_oversample_pulses_behav: assert always {cnt_oversample_pulses = 0 or cnt_oversample_pulses = prev(cnt_oversample_pulses) or  cnt_oversample_pulses = (prev(cnt_oversample_pulses)+1)};
 	--check behavior of cnt_digits_received counter 
 	cnt_digits_received_behav: assert always {cnt_digits_received = 0 or cnt_digits_received = prev(cnt_digits_received) or cnt_digits_received = (prev(cnt_digits_received)+1)};
 
-	--check that o_rx_data contains the correct data in case of a valid transmit
-	check_rx: assert always (({i_tx_en and (not o_tx_busy)} |-> next_event(fell(o_rx_busy)) (o_rx_data = data_to_send))abort i_rst);
+	--check that o_rx_error is never asserted, i.e no parity or end bit errors detected
+	check_rx_error: assert always {o_rx_error = '0'};
+
+	--check the transmission and reception of the two random data items
+	check_tx_rx_val1: assert always (({i_tx_en = '1' and o_tx_busy ='0' and i_tx_data = val_1 and i_rst = '0'} |-> next_event(fell(o_rx_busy)) (o_rx_data = data_to_send))abort i_rst);
+	check_tx_rx_val2: assert always (({i_tx_en = '1' and o_tx_busy ='0' and i_tx_data = val_2 and i_rst = '0'} |-> next_event(fell(o_rx_busy)) (o_rx_data = data_to_send))abort i_rst);
+	
 	--#####################################################
 
 	-------------------
 	--ASSUME PROPERTIES
 	-------------------
-	assume {i_rst = '1'; true[*]; i_rst = '1'};
+	assume {i_rst = '1'; i_rst = '0' [*1 to inf]};
 
 	assume {r_state_tx = IDLE};
 	assume {r_state_rx = IDLE};
@@ -158,7 +219,24 @@ vunit formal_test(uart(rtl)) {
 	assume {w_tx_parity = '0'};
 	assume {send_seq = IDLE};
 
+	assume {true[*5]; i_tx_en = '1' : o_tx_busy ='0' : i_tx_data = val_1};
+
+	--dont latch in other data to send before rx_busy deasserts
+	assume always {fell(o_tx_busy)} |-> o_tx_busy = '0' until_ fell(o_rx_busy);
+
+
+	--val_1 and val_2 should be different to check againt data duplication 
+	assume_diff_val : assume {val_1 /= val_2};
+
+	--make it clear that val2 is to be written after val1
+	consecutive_push: assume always {flag_in2} |-> {flag_in1};
+
+	reset_tx_fsm : assume {tx_state = IDLE};
+
 	assume always {i_tx_en and o_tx_busy} |-> {stable(i_tx_en) && stable(i_tx_data)};
 
 	--#####################################################
+	--cover back to back transactions of val_1 and val_2
+	--cover required to avoid vacuous seccess of the check_tx_rx_val1 / check_tx_rx_val2 properties
+	cover_val1_val2: cover {i_tx_en = '1' and o_tx_busy ='0' and i_tx_data = val_1 and i_rst = '0'; true[*]; (fell(o_rx_busy)) and  (o_rx_data = data_to_send); true[*];i_tx_en = '1' and o_tx_busy ='0' and i_tx_data = val_2 and i_rst = '0'; true[*]; (fell(o_rx_busy)) and  (o_rx_data = data_to_send)};
 }

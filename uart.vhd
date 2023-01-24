@@ -3,9 +3,9 @@ use ieee.std_logic_1164.all;
 
 entity uart is
 	generic(
-		g_sys_clk : natural :=40000000;		--system clock rate in Hz
-		g_baud : natural :=256000;				--baud rate in bits/sec
-		g_oversample : natural :=16; 			--oversample rate
+		g_sys_clk : natural :=20;		--system clock rate in Hz
+		g_baud : natural :=1;				--baud rate in bits/sec
+		g_oversample : natural :=6; 			--oversample rate
 		g_word_width : natural :=8;				--width of the data to transmit 
 		g_parity_type : std_ulogic := '0');		--'0' for even parity, '1' for odd
 	port(
@@ -97,6 +97,7 @@ begin
 			cnt_digits_send <=0;				--initialize write pointer
 			r_tx_data <= (others => '0');		--clear data to send 
 			o_tx <= '1';						--keep line raised
+			cnt_digits_send <= 0;
 		elsif(rising_edge(i_clk)) then
 			case r_state_tx is 
 				when IDLE =>
@@ -113,7 +114,7 @@ begin
 					if(r_baud_pulse = '1') then
 						o_tx <= r_tx_data(0);				--lsb first
 						o_tx_busy <= '1';
-						if(cnt_digits_send < g_word_width + 3) then
+						if(cnt_digits_send < g_word_width + 2) then
 							r_tx_data <= '1' & r_tx_data(r_tx_data'high downto 1);
 							cnt_digits_send <= cnt_digits_send +1;
 							r_state_tx <= TRANSMIT;
@@ -153,6 +154,8 @@ begin
 			o_rx_data <= (others => '0');		--initialize output data
 			r_rx_data <= (others => '0');		--clear received data
 			r_state_rx <= IDLE;					--initialize rx state to IDLE
+			cnt_digits_received <= 0;
+			cnt_oversample_pulses <= 0;
 		elsif(rising_edge(i_clk)) then
 			case r_state_rx is 
 				when IDLE =>
@@ -168,7 +171,7 @@ begin
 								r_state_rx <= IDLE;
 							else
 								o_rx_busy <= '1';
-								cnt_oversample_pulses <= 0;
+								cnt_oversample_pulses <= 1;
 								r_state_rx <= RECEIVE;
 							end if;
 						else
@@ -201,12 +204,12 @@ begin
 								o_rx_busy <= '0';
 								o_rx_data <= r_rx_data(r_rx_data'high-2 downto 0);
 								--verify the stop bit
-								if(i_rx /= '1') then
+								if(r_rx_data(r_rx_data'high) = '0') then
 									o_rx_error <= '1';
 								end if;
 								--verify the detection of the message
 								--spc parity check equation is : data xor parity_bit = parity_type
-								if(xor(r_rx_data(r_rx_data'high -1 downto 0)) /= g_parity_type)then
+								if(xor(r_rx_data(r_rx_data'high -2 downto 0)) /= r_rx_data(r_rx_data'high -1))then
 									o_rx_error <= '1'; 
 								end if;
 							end if;

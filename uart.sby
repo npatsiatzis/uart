@@ -1,15 +1,19 @@
 [tasks]
 task_bmc
+task_cover
 
 [options]
 task_bmc: mode bmc
-task_bmc: depth 200	
+task_bmc: depth 300	
+task_cover: mode cover
+task_cover: depth 250
 
 [engines]
 task_bmc: abc bmc3
+task_cover: smtbmc
 
 [script]
-ghdl --std=08 -gg_sys_clk=32 -gg_baud=1 -gg_oversample=16 parity.vhd uart.vhd uart.psl -e uart
+ghdl --std=08 -gg_sys_clk=20 -gg_baud=1 -gg_oversample=6 parity.vhd uart.vhd uart.psl -e uart
 prep -top uart
 
 [files]
