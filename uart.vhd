@@ -3,9 +3,9 @@ use ieee.std_logic_1164.all;
 
 entity uart is
 	generic(
-		g_sys_clk : natural :=20;		--system clock rate in Hz
-		g_baud : natural :=1;				--baud rate in bits/sec
-		g_oversample : natural :=6; 			--oversample rate
+		g_sys_clk : natural :=40000000;		--system clock rate in Hz
+		g_baud : natural :=256000;				--baud rate in bits/sec
+		g_oversample : natural :=16; 			--oversample rate
 		g_word_width : natural :=8;				--width of the data to transmit 
 		g_parity_type : std_ulogic := '0');		--'0' for even parity, '1' for odd
 	port(
