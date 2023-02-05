@@ -90,7 +90,6 @@ class UartBfm(metaclass=utility_classes.Singleton):
         self.dut.i_rx.value = 1
         await ClockCycles(self.dut.i_clk,5)
         self.dut.i_rst.value = 0
-        await RisingEdge(self.dut.i_clk)
 
 
     async def driver_bfm(self):
@@ -111,7 +110,7 @@ class UartBfm(metaclass=utility_classes.Singleton):
 
     async def data_mon_bfm(self):
         while True:
-            await RisingEdge(self.dut.i_clk)
+            await RisingEdge(self.dut.o_tx_busy)
             i_tx_en = self.dut.i_tx_en.value
             i_tx_data = self.dut.i_tx_data.value
 
@@ -121,7 +120,7 @@ class UartBfm(metaclass=utility_classes.Singleton):
 
     async def result_mon_bfm(self):
         while True:
-            await RisingEdge(self.dut.i_clk)
+            await FallingEdge(self.dut.o_rx_busy)
             self.result_mon_queue.put_nowait(self.dut.o_rx_data.value)
 
 

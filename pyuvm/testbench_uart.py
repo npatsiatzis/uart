@@ -1,4 +1,4 @@
-from cocotb.triggers import FallingEdge
+from cocotb.triggers import FallingEdge,RisingEdge
 from cocotb_coverage import crv
 from cocotb.clock import Clock
 from pyuvm import *
@@ -37,7 +37,7 @@ class SeqItem(uvm_sequence_item):
 
     def __init__(self, name, i_tx_en,i_tx_data):
         super().__init__(name)
-        self. i_tx_en = i_tx_en
+        self.i_tx_en = i_tx_en
         self.i_crv = crv_inputs(i_tx_data)
 
     def randomize_operands(self):
@@ -55,11 +55,10 @@ class RandomSeq(uvm_sequence):
             data_tr = SeqItem("data_tr", None,None)
             await self.start_item(data_tr)
             data_tr.randomize_operands()
-            while((data_tr.i_crv.tx_data) in covered_values):
+            while(data_tr.i_crv.tx_data in covered_values):
                 data_tr.randomize_operands()
-            covered_values.append((data_tr.i_crv.tx_data))
+            covered_values.append(data_tr.i_crv.tx_data)
             await self.finish_item(data_tr)
-            await FallingEdge(cocotb.top.o_tx_busy)
 
 
 class TestAllSeq(uvm_sequence):
@@ -85,6 +84,8 @@ class Driver(uvm_driver):
         while True:
             data = await self.seq_item_port.get_next_item()
             await self.bfm.send_data((data.i_tx_en,data.i_crv.tx_data))
+            await RisingEdge(self.bfm.dut.o_tx_busy)
+            await self.bfm.send_data((0,0))
             result = await self.bfm.get_result()
             self.ap.write(result)
             data.result = result
@@ -134,7 +135,6 @@ class Scoreboard(uvm_component):
 
     def check_phase(self):
         passed = True
-        rx_data = 0
         try:
             self.errors = ConfigDB().get(self, "", "CREATE_ERRORS")
         except UVMConfigItemNotFound:
@@ -146,15 +146,13 @@ class Scoreboard(uvm_component):
                 self.logger.critical(f"result {actual_result} had no command")
             else:
                 (i_tx_en,i_tx_data) = data
-                old_rx_data = rx_data
-                rx_data = actual_result
-                if(old_rx_data != rx_data):
-                    if int(i_tx_data) == int(actual_result):
-                        self.logger.info("PASSED:")
-                    else:
-                        self.logger.error("FAILED:")
-
-                        passed = False
+                if int(i_tx_data) == int(actual_result):
+                    self.logger.info("PASSED")
+                    print("i_tx_data is {}, rx_data is {}".format(int(i_tx_data),int(actual_result)))
+                else:
+                    self.logger.error("FAILED")
+                    print("i_tx_data is {}, rx_data is {}".format(int(i_tx_data),int(actual_result)))
+                    passed = False
         assert passed
 
 
