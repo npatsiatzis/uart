@@ -1,7 +1,5 @@
 ![example workflow](https://github.com/npatsiatzis/uart/actions/workflows/regression.yml/badge.svg)
 ![example workflow](https://github.com/npatsiatzis/uart/actions/workflows/coverage.yml/badge.svg)
-![example workflow](https://github.com/npatsiatzis/uart/actions/workflows/regression_pyuvm.yml/badge.svg)
-![example workflow](https://github.com/npatsiatzis/uart/actions/workflows/coverage_pyuvm.yml/badge.svg)
 ![example workflow](https://github.com/npatsiatzis/uart/actions/workflows/formal.yml/badge.svg)
 
 ### simple uart RTL implementation
