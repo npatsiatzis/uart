@@ -1,4 +1,4 @@
-name: pyuvm Regression Tests
+name: uart_16450 Regression Tests
 on: [push]
 jobs:
   run_tests:
