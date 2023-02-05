@@ -40,7 +40,7 @@ jobs:
     
     - name: regression
       run: |
-        cd pyuvm/ && make
+        cd uart_16450/ && make
       
     - name: pyuvm Functional Coverage
       run: |
