@@ -1,4 +1,4 @@
-name: pyuvm Functional Coverage
+name: uart_16450 Functional Coverage
 on: [push]
 jobs:
   run_tests:
