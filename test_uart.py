@@ -15,7 +15,9 @@ rtl_dir = tests_dir                                    #path to hdl folder where
 #run tests with generic values for length
 @pytest.mark.parametrize("g_word_width", [str(i) for i in range(2,5,2)])
 @pytest.mark.parametrize("g_sys_clk", [str(4*10**7),str(5*10**7)])
-def test_uart(g_word_width,g_sys_clk):
+@pytest.mark.parametrize("g_baud", [str(256000)])
+@pytest.mark.parametrize("g_oversample", [str(16)])
+def test_uart(g_word_width,g_sys_clk,g_baud,g_oversample):
 
     module = "testbench"
     toplevel = "uart"   
@@ -27,6 +29,8 @@ def test_uart(g_word_width,g_sys_clk):
     parameter = {}
     parameter['g_word_width'] = g_word_width
     parameter['g_sys_clk'] = g_sys_clk
+    parameter['g_baud'] = g_baud
+    parameter['g_oversample'] = g_oversample
 
 
     run(
