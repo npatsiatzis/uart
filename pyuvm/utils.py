@@ -85,25 +85,27 @@ class UartBfm(metaclass=utility_classes.Singleton):
     async def reset(self):
         await RisingEdge(self.dut.i_clk)
         self.dut.i_rst.value = 1
-        self.dut.i_tx_en.value = 0
-        self.dut.i_tx_data.value = 0 
-        self.dut.i_rx.value = 1
+
+        self.dut.i_we.value = 0
+        self.dut.i_stb.value = 0 
+        self.dut.i_addr.value = 0
+        self.dut.i_data.value = 0
+        self.dut.i_rx.value = 0
         await ClockCycles(self.dut.i_clk,5)
         self.dut.i_rst.value = 0
 
 
     async def driver_bfm(self):
-        self.dut.i_tx_en.value = 0
-        self.dut.i_rx.value = 1
-        self.dut.i_tx_data.value = 0
 
         while True:
             await RisingEdge(self.dut.i_clk)
             self.dut.i_rx.value = self.dut.o_tx.value
             try:
-                (i_tx_en,i_tx_data) = self.driver_queue.get_nowait()
-                self.dut.i_tx_en.value = i_tx_en
-                self.dut.i_tx_data.value = i_tx_data
+                (i_we,i_stb,i_addr,i_data) = self.driver_queue.get_nowait()
+                self.dut.i_we.value = i_we
+                self.dut.i_stb.value = i_stb
+                self.dut.i_addr.value = i_addr
+                self.dut.i_data.value = i_data
 
             except QueueEmpty:
                 pass
@@ -111,17 +113,16 @@ class UartBfm(metaclass=utility_classes.Singleton):
     async def data_mon_bfm(self):
         while True:
             await RisingEdge(self.dut.o_tx_busy)
-            i_tx_en = self.dut.i_tx_en.value
-            i_tx_data = self.dut.i_tx_data.value
+            i_data = self.dut.i_data.value
 
-            data = (i_tx_en,i_tx_data)
-            self.data_mon_queue.put_nowait(data)
+            self.data_mon_queue.put_nowait(i_data)
 
 
     async def result_mon_bfm(self):
         while True:
             await FallingEdge(self.dut.o_rx_busy)
-            self.result_mon_queue.put_nowait(self.dut.o_rx_data.value)
+            await RisingEdge(self.dut.o_ack)
+            self.result_mon_queue.put_nowait(self.dut.o_data.value)
 
 
     def start_bfm(self):

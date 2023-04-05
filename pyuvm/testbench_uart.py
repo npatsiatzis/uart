@@ -35,13 +35,11 @@ class crv_inputs(crv.Randomized):
 # Sequence classes
 class SeqItem(uvm_sequence_item):
 
-    def __init__(self, name, i_tx_en,i_tx_data):
+    def __init__(self, name,i_tx_data):
         super().__init__(name)
-        self.i_tx_en = i_tx_en
         self.i_crv = crv_inputs(i_tx_data)
 
     def randomize_operands(self):
-        self.i_tx_en = 1
         self.i_crv.randomize()
 
     def randomize(self):
@@ -52,7 +50,7 @@ class RandomSeq(uvm_sequence):
 
     async def body(self):
         while(len(covered_values) != 2**g_word_width):
-            data_tr = SeqItem("data_tr", None,None)
+            data_tr = SeqItem("data_tr",None)
             await self.start_item(data_tr)
             data_tr.randomize_operands()
             while(data_tr.i_crv.tx_data in covered_values):
@@ -83,9 +81,11 @@ class Driver(uvm_driver):
         await self.launch_tb()
         while True:
             data = await self.seq_item_port.get_next_item()
-            await self.bfm.send_data((data.i_tx_en,data.i_crv.tx_data))
-            await RisingEdge(self.bfm.dut.o_tx_busy)
-            await self.bfm.send_data((0,0))
+            await self.bfm.send_data((1,1,0,data.i_crv.tx_data))
+            await self.bfm.send_data((1,0,0,data.i_crv.tx_data))
+
+            await FallingEdge(self.bfm.dut.o_rx_busy)
+            await self.bfm.send_data((0,1,1,0))
             result = await self.bfm.get_result()
             self.ap.write(result)
             data.result = result
@@ -98,10 +98,9 @@ class Coverage(uvm_subscriber):
         self.cvg = set()
 
     def write(self, data):
-        (i_tx_en,i_tx_data) = data
-        number_cover(i_tx_data)
-        if(int(i_tx_data) not in self.cvg):
-            self.cvg.add(int(i_tx_data))
+        number_cover(data)
+        if(int(data) not in self.cvg):
+            self.cvg.add(int(data))
 
     def report_phase(self):
         try:
@@ -145,13 +144,12 @@ class Scoreboard(uvm_component):
             if not data_success:
                 self.logger.critical(f"result {actual_result} had no command")
             else:
-                (i_tx_en,i_tx_data) = data
-                if int(i_tx_data) == int(actual_result):
+                if int(data) == int(actual_result):
                     self.logger.info("PASSED")
-                    print("i_tx_data is {}, rx_data is {}".format(int(i_tx_data),int(actual_result)))
+                    print("i_tx_data is {}, rx_data is {}".format(int(data),int(actual_result)))
                 else:
                     self.logger.error("FAILED")
-                    print("i_tx_data is {}, rx_data is {}".format(int(i_tx_data),int(actual_result)))
+                    print("i_tx_data is {}, rx_data is {}".format(int(data),int(actual_result)))
                     passed = False
         assert passed
 

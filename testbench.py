@@ -81,8 +81,7 @@ async def test(dut):
 		dut.i_stb.value = 1 			  #now propagate read data to o_data
 		dut.i_addr.value = 1
 
-		await RisingEdge(dut.i_clk)		#1 cycle to issue the command
-		await RisingEdge(dut.i_clk)		#1 cycle to get the result to o_data
+		await RisingEdge(dut.o_ack)
 		assert not (expected_value != int(dut.o_data.value)),"Different expected to actual read data"
 		coverage_db["top.i_data"].add_threshold_callback(notify, 100)
 		number_cover(dut)
