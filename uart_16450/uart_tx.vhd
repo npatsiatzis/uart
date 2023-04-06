@@ -7,7 +7,7 @@ entity uart_tx is
 		g_data_width : natural :=8);				--width of the data to transmit	
 	port(
 		--system clock and reset
-		i_clk : in std_ulogic;					--system clock
+		i_clk : in std_ulogic;						--system clock
 		i_arstn : in std_ulogic;
 
 		--register write strobe
@@ -27,6 +27,9 @@ entity uart_tx is
 
 		--TX serial output
 		o_tx : out std_ulogic;
+
+		--interrupt
+		o_tx_done : out std_ulogic;
 
 		--TX status
 		o_thr_empty : out std_ulogic;
@@ -53,7 +56,6 @@ architecture rtl of uart_tx is
 	signal w_tsr : std_ulogic_vector(g_data_width -1 downto 0);
 
 	--signlas that help with verification
-	signal f_tx_done : std_ulogic;
 	signal f_state_prev : t_state;
 
 begin
@@ -216,6 +218,6 @@ begin
 		end if;		
 	end process; -- TX_FSM
 
-	f_tx_done <= '1' when (w_state = idle and (f_state_prev = stop_1bit or f_state_prev = stop_2bit or f_state_prev = stop_halfbit)) else '0';
+	o_tx_done <= '1' when (w_state = idle and (f_state_prev = stop_1bit or f_state_prev = stop_2bit or f_state_prev = stop_halfbit)) else '0';
 
 end rtl;

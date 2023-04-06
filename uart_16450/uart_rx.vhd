@@ -15,13 +15,12 @@ entity uart_rx is
 
 			--serial data in
 			i_rx : in std_ulogic;
-
-			--register read strobes
-			i_rbr_rd : in std_ulogic;
-			--i_lsr_rd : in std_ulogic;
+			--interrupt
+			o_rx_done : out std_ulogic;
 
 			--register (receiver buffer register)
 			o_rbr : out std_ulogic_vector(g_data_width -1 downto 0);
+
 
 			--RX control signals
 			--i_tx_break : in std_ulogic;
@@ -53,7 +52,7 @@ architecture rtl of uart_rx is
 
 	--RX FSM signals
 	type t_state is (idle_prior_0,idle_after_0,start,shift,parity,stop);
-	signal w_state : t_state;
+	signal w_state, w_state_prev : t_state;
 	signal w_bits_received_cnt : integer range 0 to 8;
 	signal w_rsr : std_ulogic_vector(g_data_width -1 downto 0);
 	signal w_baud_counter : unsigned(i_divisor'range); 
@@ -76,8 +75,8 @@ begin
 	rx_idle_indicator : process(i_clk,i_arstn) is
 	begin
 		if(i_arstn = '0') then
-			rx_idle <= '0';
-			rx_idle_prev <= '0';
+			rx_idle <= '1';
+			rx_idle_prev <= '1';
 		elsif (rising_edge(i_clk)) then
 			rx_idle_prev <= rx_idle;
 			if(w_state = idle_prior_0) then
@@ -94,8 +93,12 @@ begin
 	begin
 		if(i_arstn = '0') then
 			o_rbr <= (others => '0');
+			o_rx_done <= '0';
 		elsif(rising_edge(i_clk)) then
+			o_rx_done <= '0';
+
 			if(rx_idle = '1' and rx_idle_prev = '0') then
+				o_rx_done <= '1';
 				case i_data_bits is 
 					when "00" =>
 						o_rbr <= "000" & w_rsr(7 downto 3);
@@ -204,6 +207,7 @@ begin
 			w_frame_err <= '0';
 			w_parity_err <= '0';
 		elsif (rising_edge(i_clk)) then
+
 			case w_state is 
 				when idle_prior_0 =>
 					if(w_rx_prev = '0' and w_rx_prev_prev = '1') then

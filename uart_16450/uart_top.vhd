@@ -7,17 +7,22 @@ entity uart_top is
 		g_sys_clk : natural := 5000;		--system clock freq. in Hz
 		g_baud_rate : natural := 300;  		--baud rate in bits/s
 		g_data_width : natural :=8;
-		g_addr_width : natural :=3);
+		g_addr_width : natural :=2);
 	port (
 		--system clock and reset
 		i_clk : in std_ulogic;
 		i_arstn : in std_ulogic;
 
-		--interface signals
+		--wishbone b4 (slave) interface
 		i_we : in std_ulogic;
+		i_stb : in std_ulogic;
 		i_addr : in std_logic_vector(g_addr_width -1  downto 0); 
 		i_data : in std_logic_vector(15 downto 0);
 		o_data : out std_logic_vector(15 downto 0);
+
+		--interrupts
+		o_tx_done : out std_ulogic;
+		o_rx_done : out std_ulogic;
 
 		--serial input/output signals
 		i_rx : in std_ulogic;
@@ -63,17 +68,15 @@ begin
 		i_addr => i_addr,
 		i_data => i_data,
 		i_we => i_we,
+		i_stb => i_stb,
 		o_data => o_data,
 
 		--registers
 		i_rbr =>w_rbr,
-		--i_lsr =>,
 		o_thr => w_thr,
 
 		--registers read/write strobes
-		o_rbr_rd =>w_rbr_rd,
 		o_thr_wr =>w_thr_wr,
-		--o_lsr_rd =>,
 
 		--RX/TX control
 		o_data_bits =>w_data_bits,
@@ -118,6 +121,7 @@ begin
 
 		--TX serial output
 		o_tx =>o_tx,
+		o_tx_done => o_tx_done,
 
 		--TX status
 		o_thr_empty =>w_thr_empty,
@@ -136,9 +140,7 @@ begin
 
 		--serial data in
 		i_rx =>i_rx,
-
-		--register read strobes
-		i_rbr_rd =>w_rbr_rd,
+		o_rx_done => o_rx_done,
 
 		--register (receiver buffer register)
 		o_rbr =>w_rbr,

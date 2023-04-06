@@ -32,6 +32,7 @@ def number_cover(dut):
 async def reset(dut,cycles=1):
 	dut.i_arstn.value = 0
 	dut.i_we.value = 0 
+	dut.i_stb.value = 0
 	dut.i_data.value = 0
 	dut.i_rx.value = 0
 
@@ -51,8 +52,10 @@ async def test(dut):
 	expected_value = 0
 	rx_data = 0
 
+	# configure UART core via interface
 	# set databits(8), stopbits(1), parity_en(1), parity_type etc..
-	dut.i_addr.value = 3
+	dut.i_stb.value = 1
+	dut.i_addr.value = 1
 	dut.i_we.value = 1
 	dut.i_data.value = 11
 
@@ -64,14 +67,28 @@ async def test(dut):
 			data = random.randint(0,2**g_word_width-1)
 		expected_value = data
 
+		dut.i_stb.value = 1
 		dut.i_we.value = 1
 		dut.i_addr.value = 0
 		dut.i_data.value = data
 
 		await RisingEdge(dut.i_clk)
-		await RisingEdge(dut.uart_tx.f_tx_done)
+		dut.i_stb.value = 0
+		# await FallingEdge(dut.uart_tx.f_tx_done)
+		await FallingEdge(dut.o_rx_done)
 
-		assert not (expected_value != int(dut.w_rbr.value)),"Different expected to actual read data"
+		dut.i_stb.value = 1
+		dut.i_we.value = 0
+		dut.i_addr.value = 0
+	
+		# await RisingEdge(dut.i_clk)
+		
+
+
+		# dut.i_we.value = 0
+		# read o_data via interface
+		await ClockCycles(dut.i_clk,2)
+		assert not (expected_value != int(dut.o_data.value)),"Different expected to actual read data"
 		coverage_db["top.i_data"].add_threshold_callback(notify, 100)
 		number_cover(dut)
 
