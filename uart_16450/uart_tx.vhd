@@ -133,7 +133,7 @@ begin
 					end if;
 				when start =>
 					if(w_baud_counter = 0) then
-						w_baud_counter <= unsigned(i_divisor);
+						w_baud_counter <= unsigned(i_divisor)-1;
 					elsif(w_baud_counter = 1) then
 						w_baud_counter <= (others => '0');
 						w_tsr <= i_thr;
@@ -147,7 +147,7 @@ begin
 				when shift =>
 					w_tx <= w_tsr(0);
 					if(w_baud_counter = 0) then
-						w_baud_counter <= unsigned(i_divisor);
+						w_baud_counter <= unsigned(i_divisor)-1;
 					elsif (w_baud_counter = 1) then
 						w_baud_counter <= (others => '0');
 						w_tsr <= '0' & w_tsr(7 downto 1);
@@ -168,7 +168,7 @@ begin
 					end if;
 				when parity =>
 					if(w_baud_counter = 0) then 
-						w_baud_counter <= unsigned(i_divisor);
+						w_baud_counter <= unsigned(i_divisor)-1;
 					elsif (w_baud_counter = 1) then
 						w_baud_counter <= (others => '0');
 						w_state <= stop_1bit;
@@ -178,7 +178,7 @@ begin
 					w_tx <= w_parity;
 				when stop_1bit =>
 						if(w_baud_counter = 0) then
-							w_baud_counter <= unsigned(i_divisor);
+							w_baud_counter <= unsigned(i_divisor)-1;
 						elsif(w_baud_counter = 1) then
 							w_baud_counter <= (others => '0');
 							if(i_stop_bits = "00") then
@@ -194,7 +194,7 @@ begin
 						w_tx <= '1';
 				when stop_halfbit =>
 					if(w_baud_counter = 0) then
-						w_baud_counter <= unsigned(i_divisor);
+						w_baud_counter <= unsigned(i_divisor)-1;
 					elsif (w_baud_counter = 1) then
 						w_baud_counter <= (others => '0');
 						w_state <= idle;

@@ -18,8 +18,8 @@ entity uart_rx is
 			--interrupt
 			o_rx_done : out std_ulogic;
 
-			--register (receiver buffer register)
-			o_rbr : out std_ulogic_vector(g_data_width -1 downto 0);
+			--register (receiver holding register)
+			o_rhr : out std_ulogic_vector(g_data_width -1 downto 0);
 
 
 			--RX control signals
@@ -92,7 +92,7 @@ begin
 	rbr_regsiter : process(i_clk,i_arstn) is
 	begin
 		if(i_arstn = '0') then
-			o_rbr <= (others => '0');
+			o_rhr <= (others => '0');
 			o_rx_done <= '0';
 		elsif(rising_edge(i_clk)) then
 			o_rx_done <= '0';
@@ -101,13 +101,13 @@ begin
 				o_rx_done <= '1';
 				case i_data_bits is 
 					when "00" =>
-						o_rbr <= "000" & w_rsr(7 downto 3);
+						o_rhr <= "000" & w_rsr(7 downto 3);
 					when "01" =>
-						o_rbr <= "00" & w_rsr(7 downto 2);
+						o_rhr <= "00" & w_rsr(7 downto 2);
 					when "10" =>
-						o_rbr <= "0" & w_rsr(7 downto 1);
+						o_rhr <= "0" & w_rsr(7 downto 1);
 					when others => 
-						o_rbr <= w_rsr;
+						o_rhr <= w_rsr;
 				end case;
 			end if;
 		end if;
@@ -216,7 +216,7 @@ begin
 					w_baud_counter <= unsigned(i_divisor) -1;
 				when idle_after_0 =>
 					if(w_baud_counter = w_divisor_half_rate) then
-						if(w_rx_prev ='1') then
+						if(w_rx_prev ='1') then				--false start bit detection
 							w_state <= idle_prior_0;
 						else
 							w_rsr <= (others => '0');

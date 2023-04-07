@@ -21,7 +21,7 @@ entity interface is
 			o_ack : out std_ulogic;
 
 			--registers
-			i_rbr : in std_ulogic_vector(g_data_width-1 downto 0);
+			i_rhr : in std_ulogic_vector(g_data_width-1 downto 0);
 			--i_lsr : in std_ulogic_vector(6 downto 0);
 			o_thr : out std_ulogic_vector(g_data_width-1 downto 0);
 
@@ -53,18 +53,32 @@ architecture rtl of interface is
 	--interface registers
 	constant DIVISOR : std_ulogic_vector(1 downto 0) := "10";
 	constant THR : std_ulogic_vector(1 downto 0) := "00";
-	constant RBR : std_ulogic_vector(1 downto 0) :="00";
+	constant RHR : std_ulogic_vector(1 downto 0) :="00";
 	constant LCR : std_ulogic_vector (1 downto 0) := "01";
 
 	signal w_data : std_ulogic_vector(7 downto 0);
+	--divisor register
+	signal w_divisor : std_ulogic_vector(15 downto 0);
+	--transmit holding register
 	signal w_thr : std_ulogic_vector(g_data_width -1 downto 0);
+	--line control register
 	signal w_lcr : std_ulogic_vector(6 downto 0);
 
 begin
+
+		-- 					REGISTER MAP
+
+	-- 			Address 		| 		Functionality
+	--			   0 			|(W)	transmit holding register (data to tx)
+	--			   0 			|(R)	receiver holding register (received data)
+	--			   1 			|		line control register (configuration information)
+	--			   2 			|		divisor register (for baud rage generation)
+
+
 	manage_intf_regs : process(i_clk,i_arstn) is
 	begin
 		if(i_arstn = '0') then
-			o_divisor <= std_ulogic_vector(to_unsigned(c_divisor,o_divisor'length));
+			w_divisor <= std_ulogic_vector(to_unsigned(c_divisor,w_divisor'length));
 			w_thr <= (others => '0');
 			w_lcr <= (others => '0');
 
@@ -76,7 +90,7 @@ begin
 			if(i_we = '1' and i_stb = '1') then 
 				case i_addr is 
 					when DIVISOR =>
-						o_divisor <= i_data;
+						w_divisor <= i_data;
 					when THR =>
 						w_thr <= i_data(7 downto 0);
 						o_thr_wr <= '1';
@@ -97,8 +111,8 @@ begin
 		elsif(rising_edge(i_clk)) then
 			if(i_stb = '1' and i_we = '0') then
 				case i_addr(1 downto 0) is 
-					when RBR => 
-						w_data <= i_rbr;
+					when RHR => 
+						w_data <= i_rhr;
 					when others =>
 						w_data <= (others => '1');
 				end case;
@@ -106,8 +120,8 @@ begin
 		end if;
 	end process; -- o_data_proc
 
+	o_divisor <= w_divisor;
 	o_thr <= w_thr;
-
 
 
 	o_data_bits <= w_lcr(1 downto 0); 

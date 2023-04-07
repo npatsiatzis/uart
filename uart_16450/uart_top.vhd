@@ -30,7 +30,7 @@ entity uart_top is
 end uart_top;
 
 architecture rtl of uart_top is 
-	signal w_rbr : std_logic_vector(g_data_width -1 downto 0);
+	signal w_rhr : std_logic_vector(g_data_width -1 downto 0);
 	signal w_thr : std_logic_vector(g_data_width -1 downto 0);
 
 	signal w_rbr_rd : std_ulogic;
@@ -72,7 +72,7 @@ begin
 		o_data => o_data,
 
 		--registers
-		i_rbr =>w_rbr,
+		i_rhr =>w_rhr,
 		o_thr => w_thr,
 
 		--registers read/write strobes
@@ -143,7 +143,7 @@ begin
 		o_rx_done => o_rx_done,
 
 		--register (receiver buffer register)
-		o_rbr =>w_rbr,
+		o_rhr =>w_rhr,
 
 		--RX control signals
 		i_parity_en =>w_parity_en,
