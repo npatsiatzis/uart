@@ -13,7 +13,7 @@ entity interface is
 			i_arstn : in std_ulogic;
 
 			--Interface side
-			i_addr : in std_ulogic_vector(1 downto 0);
+			i_addr : in std_ulogic;
 			i_data : in std_ulogic_vector(15 downto 0);
 			i_we : in std_ulogic;
 			i_stb : in std_ulogic;
@@ -48,13 +48,25 @@ entity interface is
 end interface;
 
 architecture rtl of interface is
-	constant c_divisor : natural range 0 to 2**16 -1:= (g_sys_clk)/g_baud_rate;
+	constant c_divisor : natural range 0 to 2**16 -1:= (g_sys_clk)/(g_baud_rate);
 
-	--interface registers
-	constant DIVISOR : std_ulogic_vector(1 downto 0) := "10";
-	constant THR : std_ulogic_vector(1 downto 0) := "00";
-	constant RHR : std_ulogic_vector(1 downto 0) :="00";
-	constant LCR : std_ulogic_vector (1 downto 0) := "01";
+	--interface registers addresses
+
+	constant DIVISOR : std_ulogic := '0';
+	--transmitter holding register
+	--the user writes in this write only location the data the data to be sent through the serial channel
+	--NOTE that the DLAB bit (MSB) of the line control register must be '0'.
+	--NOTE that if a character less than 8 bits is to be transmitted, in must be right-justified.
+	constant THR : std_ulogic := '0';
+	--received holding register
+	--the user can get the data received through the serial channel by reading this register
+	--NOTE that the DLAB bit (MSB) of the line control register must be '0'.
+	constant RHR : std_ulogic :='0';
+	--line control register
+	--this register controls the asynchronnous data communication format, i.e. the character framing, 
+	--namely the word length of the data frame, the existence and type of parity, 
+	--the length of the stop bit(s), break condition enforcement, divisor register (MSB of lcr) enable
+	constant LCR : std_ulogic := '1';
 
 	signal w_data : std_ulogic_vector(7 downto 0);
 	--divisor register
@@ -62,17 +74,22 @@ architecture rtl of interface is
 	--transmit holding register
 	signal w_thr : std_ulogic_vector(g_data_width -1 downto 0);
 	--line control register
-	signal w_lcr : std_ulogic_vector(6 downto 0);
+	signal w_lcr : std_ulogic_vector(7 downto 0);
+
+	alias w_dlab : std_ulogic is w_lcr(7);
 
 begin
 
 		-- 					REGISTER MAP
 
+	--				REGISTERS ACCESSIBLE WHEN DLAB = 0
 	-- 			Address 		| 		Functionality
-	--			   0 			|(W)	transmit holding register (data to tx)
-	--			   0 			|(R)	receiver holding register (received data)
+	--			   0 			|(W)	transmit holding register (character to be transmitted)
+	--			   0 			|(R)	receiver holding register (character received)
 	--			   1 			|		line control register (configuration information)
-	--			   2 			|		divisor register (for baud rage generation)
+
+	--			REGISTERS ACCESSIBLE WHEN DLAB = 1
+	--			   0  			|		divisor register (for baud rage generation)
 
 
 	manage_intf_regs : process(i_clk,i_arstn) is
@@ -87,18 +104,18 @@ begin
 			o_ack <= i_stb;
 			o_thr_wr <= '0';
 
-			if(i_we = '1' and i_stb = '1') then 
+			if(w_dlab = '0' and  i_we = '1' and i_stb = '1') then 
 				case i_addr is 
-					when DIVISOR =>
-						w_divisor <= i_data;
 					when THR =>
 						w_thr <= i_data(7 downto 0);
 						o_thr_wr <= '1';
 					when LCR =>
-						w_lcr <= i_data(6 downto 0);
+						w_lcr <= i_data(7 downto 0);
 					when others => 
 				end case;
-			end if;
+			elsif(w_dlab = '1' and i_we = '1' and i_stb = '1' and i_addr = DIVISOR) then
+				w_divisor <= i_data;
+			end if;	
 		end if;
 	end process; -- manage_intf_regs
 
@@ -109,8 +126,8 @@ begin
 		if(i_arstn = '0') then
 			w_data <= (others => '0');
 		elsif(rising_edge(i_clk)) then
-			if(i_stb = '1' and i_we = '0') then
-				case i_addr(1 downto 0) is 
+			if(w_dlab = '0' and  i_stb = '1' and i_we = '0') then
+				case i_addr is 
 					when RHR => 
 						w_data <= i_rhr;
 					when others =>

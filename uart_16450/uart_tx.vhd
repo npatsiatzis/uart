@@ -64,8 +64,8 @@ begin
 	thr_tsr_empty : process(i_clk,i_arstn) is
 	begin
 		if(i_arstn = '0') then
-			w_thr_empty <= '0';
-			w_tsr_empty <= '0';
+			w_thr_empty <= '1';
+			w_tsr_empty <= '1';
 		elsif (rising_edge(i_clk)) then
 			if(i_thr_wr = '1') then
 				w_thr_empty <= '0';
@@ -128,6 +128,8 @@ begin
 			f_state_prev <= w_state;
 			case w_state is 
 				when idle =>
+				--if thr is not empty, copy its contents to tsr
+				--tsr then shifts the data out to the serial out (tx) pin
 					if(w_thr_empty = '0') then
 						w_state <= start;
 					end if;

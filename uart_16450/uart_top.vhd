@@ -4,8 +4,8 @@ use ieee.numeric_std.all;
 
 entity uart_top is
 	generic (
-		g_sys_clk : natural := 5000;		--system clock freq. in Hz
-		g_baud_rate : natural := 300;  		--baud rate in bits/s
+		g_sys_clk : natural := 10_000_000;		--system clock freq. in Hz
+		g_baud_rate : natural := 9600;  		--baud rate in bits/s
 		g_data_width : natural :=8;
 		g_addr_width : natural :=2);
 	port (
@@ -16,9 +16,9 @@ entity uart_top is
 		--wishbone b4 (slave) interface
 		i_we : in std_ulogic;
 		i_stb : in std_ulogic;
-		i_addr : in std_logic_vector(g_addr_width -1  downto 0); 
-		i_data : in std_logic_vector(15 downto 0);
-		o_data : out std_logic_vector(15 downto 0);
+		i_addr : in std_ulogic; 
+		i_data : in std_ulogic_vector(15 downto 0);
+		o_data : out std_ulogic_vector(15 downto 0);
 
 		--interrupts
 		o_tx_done : out std_ulogic;

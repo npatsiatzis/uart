@@ -214,6 +214,10 @@ begin
 						w_state <= idle_after_0;
 					end if;
 					w_baud_counter <= unsigned(i_divisor) -1;
+				--verify that start bit is correctly detected, and that we did
+				--not received a false start condition due to noise.
+				--the start bit is valid if the RX is still low at the mid-bit
+				--sample of the start bit
 				when idle_after_0 =>
 					if(w_baud_counter = w_divisor_half_rate) then
 						if(w_rx_prev ='1') then				--false start bit detection
@@ -233,6 +237,7 @@ begin
 						w_baud_counter <= w_baud_counter -1;
 					end if;
 				when shift =>
+					--the receiver works with center/ mid-bit sampling
 					if(w_baud_counter = w_divisor_half_rate) then
 						w_rsr <= w_rx_prev & w_rsr(7 downto 1);
 						w_parity_err <= w_parity_err xor w_rx_prev;

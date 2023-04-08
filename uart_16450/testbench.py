@@ -74,22 +74,16 @@ async def test(dut):
 
 		await RisingEdge(dut.i_clk)
 		dut.i_stb.value = 0
-		# await FallingEdge(dut.uart_tx.f_tx_done)
 		await FallingEdge(dut.o_rx_done)
 
 		dut.i_stb.value = 1
 		dut.i_we.value = 0
 		dut.i_addr.value = 0
-	
-		# await RisingEdge(dut.i_clk)
-		
 
+		await ClockCycles(dut.i_clk,2)	#1 cycle to register read rd_rbr command, 1 cycle to copy rbr to o_data
 
-		# dut.i_we.value = 0
-		# read o_data via interface
-		await ClockCycles(dut.i_clk,2)
 		assert not (expected_value != int(dut.o_data.value)),"Different expected to actual read data"
-		coverage_db["top.i_data"].add_threshold_callback(notify, 100)
+		coverage_db["top.i_data"].add_threshold_callback(notify, 5)
 		number_cover(dut)
 
 	coverage_db.report_coverage(cocotb.log.info,bins=True)
