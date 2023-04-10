@@ -40,4 +40,4 @@ jobs:
     
     - name: regression
       run: |
-        SIM=ghdl pytest -n auto -o log_cli=True --junitxml=test-results.xml --cocotbxml=test-cocotb.xml pyuvm/test_pyuvm_uart.py
+        SIM=ghdl pytest -n auto -o log_cli=True --junitxml=test-results.xml --cocotbxml=test-cocotb.xml pyuvm_sim/test_pyuvm_uart.py
