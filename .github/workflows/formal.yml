@@ -22,9 +22,9 @@ jobs:
           $GHDL --version
       - name: formal verification
         run: |
-          sby --yosys "yosys -m ghdl" -f uart.sby
+          cd cocotb_sim/ && sby --yosys "yosys -m ghdl" -f uart.sby
           
       - name: check results
         run: |
-          var=$(cat uart_task_bmc/uart_task_bmc.xml | grep -o -E 'failures.{0,3}' | head -1 | cut -f2- -d\") 
+          cd cocotb_sim/ && var=$(cat uart_task_bmc/uart_task_bmc.xml | grep -o -E 'failures.{0,3}' | head -1 | cut -f2- -d\") 
           if [ $var = 0 ]; then exit 0; else exit 1; fi
