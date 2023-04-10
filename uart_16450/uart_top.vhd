@@ -4,8 +4,8 @@ use ieee.numeric_std.all;
 
 entity uart_top is
 	generic (
-		g_sys_clk : natural := 10_000_000;		--system clock freq. in Hz
-		g_baud_rate : natural := 9600;  		--baud rate in bits/s
+		g_sys_clk : natural := 40_000_000;		--system clock freq. in Hz
+		g_baud_rate : natural := 256_000;  		--baud rate in bits/s
 		g_data_width : natural :=8;
 		g_addr_width : natural :=2);
 	port (

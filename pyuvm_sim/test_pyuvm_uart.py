@@ -22,8 +22,8 @@ def test_uart(g_word_width,g_sys_clk,g_baud,g_oversample):
     module = "testbench_uart"
     toplevel = "uart"   
     vhdl_sources = [
-        os.path.join(rtl_dir, "parity.vhd"),
-        os.path.join(rtl_dir, "uart.vhd"),
+        os.path.join(rtl_dir, "../rtl/parity.vhd"),
+        os.path.join(rtl_dir, "../rtl/uart.vhd"),
         ]
 
     parameter = {}
@@ -54,7 +54,7 @@ def test_uart(g_word_width,g_sys_clk,g_baud,g_oversample):
 def test_parity(g_width):
 
     module = "testbench_parity"
-    toplevel = "parity"   
+    toplevel = "../rtl/parity"   
     vhdl_sources = [
         os.path.join(rtl_dir, "parity.vhd"),
         ]

@@ -3,13 +3,13 @@ task_bmc
 task_cover
 
 [options]
-task_bmc: mode bmc
-task_bmc: depth 300	
+task_bmc: mode prove
+task_bmc: depth 10	
 task_cover: mode cover
-task_cover: depth 250
+task_cover: depth 600
 
 [engines]
-task_bmc: abc bmc3
+task_bmc: smtbmc
 task_cover: smtbmc
 
 [script]
@@ -18,5 +18,5 @@ prep -top uart
 
 [files]
 uart.psl
-parity.vhd
-uart.vhd
+../rtl/parity.vhd
+../rtl/uart.vhd

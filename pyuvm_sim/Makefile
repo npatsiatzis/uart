@@ -6,8 +6,8 @@ TOPLEVEL_LANG ?= vhdl
 EXTRA_ARGS += --std=08
 SIM_ARGS += --wave=wave.ghw
 
-VHDL_SOURCES += $(PWD)/parity.vhd
-VHDL_SOURCES += $(PWD)/uart.vhd
+VHDL_SOURCES += $(PWD)/../rtl/parity.vhd
+VHDL_SOURCES += $(PWD)/../rtl/uart.vhd
 # use VHDL_SOURCES for VHDL files
 
 # TOPLEVEL is the name of the toplevel module in your Verilog or VHDL file
@@ -15,14 +15,11 @@ VHDL_SOURCES += $(PWD)/uart.vhd
 
 test:
 		rm -rf sim_build
-		$(MAKE) sim MODULE=testbench TOPLEVEL=uart
+		$(MAKE) sim MODULE=testbench_uart TOPLEVEL=uart
 
 parity:
 		rm -rf sim_build
 		$(MAKE) sim MODULE=testbench_parity TOPLEVEL=parity
-
-formal :
-		sby --yosys "yosys -m ghdl" -f uart.sby
 
 # include cocotb's make rules to take care of the simulator setup
 include $(shell cocotb-config --makefiles)/Makefile.sim

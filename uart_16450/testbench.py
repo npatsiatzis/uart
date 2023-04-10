@@ -83,7 +83,7 @@ async def test(dut):
 		await ClockCycles(dut.i_clk,2)	#1 cycle to register read rd_rbr command, 1 cycle to copy rbr to o_data
 
 		assert not (expected_value != int(dut.o_data.value)),"Different expected to actual read data"
-		coverage_db["top.i_data"].add_threshold_callback(notify, 5)
+		coverage_db["top.i_data"].add_threshold_callback(notify, 100)
 		number_cover(dut)
 
 	coverage_db.report_coverage(cocotb.log.info,bins=True)

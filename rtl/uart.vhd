@@ -6,7 +6,7 @@ entity uart is
 		g_sys_clk : natural :=40_000_000;		--system clock rate in Hz
 		g_baud : natural :=256000;				--baud rate in bits/sec
 		g_oversample : natural :=16; 			--oversample rate
-		g_word_width : natural :=4;				--width of the data to transmit 
+		g_word_width : natural :=8;				--width of the data to transmit 
 		g_parity_type : std_ulogic := '0');		--'0' for even parity, '1' for odd
 	port(
 		i_clk : in std_ulogic;					--system clock
