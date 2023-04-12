@@ -19,7 +19,7 @@ rtl_dir = tests_dir                                    #path to hdl folder where
 @pytest.mark.parametrize("g_oversample", [str(16)])
 def test_uart(g_word_width,g_sys_clk,g_baud,g_oversample):
 
-    module = "testbench_uart"
+    module = "tb_uart"
     toplevel = "uart"   
     vhdl_sources = [
         os.path.join(rtl_dir, "../rtl/parity.vhd"),
@@ -53,10 +53,10 @@ def test_uart(g_word_width,g_sys_clk,g_baud,g_oversample):
 @pytest.mark.parametrize("g_width", [str(i) for i in range(4,9,4)])
 def test_parity(g_width):
 
-    module = "testbench_parity"
-    toplevel = "../rtl/parity"   
+    module = "tb_parity"
+    toplevel = "parity"   
     vhdl_sources = [
-        os.path.join(rtl_dir, "parity.vhd"),
+        os.path.join(rtl_dir, "../rtl/parity.vhd"),
         ]
 
     parameter = {}

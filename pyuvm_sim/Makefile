@@ -15,11 +15,11 @@ VHDL_SOURCES += $(PWD)/../rtl/uart.vhd
 
 test:
 		rm -rf sim_build
-		$(MAKE) sim MODULE=testbench_uart TOPLEVEL=uart
+		$(MAKE) sim MODULE=tb_uart TOPLEVEL=uart
 
 parity:
 		rm -rf sim_build
-		$(MAKE) sim MODULE=testbench_parity TOPLEVEL=parity
+		$(MAKE) sim MODULE=tb_parity TOPLEVEL=parity
 
 # include cocotb's make rules to take care of the simulator setup
 include $(shell cocotb-config --makefiles)/Makefile.sim
