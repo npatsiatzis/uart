@@ -2,6 +2,9 @@ library ieee;
 use ieee.std_logic_1164.all;
 
 entity uart is
+	--if there is a need for at least some of these parameters to be able to change
+	--in real time, then create a configuration register that is controlled in real time 
+	--via the interface.
 	generic(
 		g_sys_clk : natural :=40_000_000;		--system clock rate in Hz
 		g_baud : natural :=256000;				--baud rate in bits/sec
@@ -13,11 +16,12 @@ entity uart is
 		i_rst : in std_ulogic;
 
 		--wishbone b4 (slave) interface
-		i_we : in std_ulogic; 
-		i_stb : in std_ulogic;
-		i_addr : in std_ulogic;
+		--i_we : in std_ulogic; 
+		--i_stb : in std_ulogic;
+		--i_addr : in std_ulogic;
+		--o_ack : out std_ulogic;
+		i_tx_en : in std_ulogic;
 		i_data : in std_ulogic_vector(g_word_width -1 downto 0);	--data to transmit
-		o_ack : out std_ulogic;
 		o_data : out std_ulogic_vector(g_word_width -1 downto 0);	--received data
 
 		--tx, rx serial lines
@@ -65,38 +69,40 @@ architecture rtl of uart is
 	--save rx_data stream including the data plus parity and end bit
 	signal r_rx_data : std_ulogic_vector(g_word_width +1 downto 0);
 
-	signal w_tx_en : std_ulogic;
-	signal w_tx_reg : std_ulogic_vector(g_word_width -1 downto 0);
+	--signal i_tx_en : std_ulogic;
+	--signal w_tx_reg : std_ulogic_vector(g_word_width -1 downto 0);
 	signal w_rx_data : std_ulogic_vector(g_word_width -1 downto 0);
 
 begin
 
-	-- 					INTERFACE REGISTER MAP
+	---- 					INTERFACE REGISTER MAP
 
-	-- 			Address 		| 		Functionality
-	--			   0 			|	data to tx (uart TX)
-	--			   1 			|	received data (uart RX)
+	---- 			Address 		| 		Functionality
+	----			   0 			|	data to tx (uart TX)
+	----			   1 			|	received data (uart RX)
 
 
 	
-	manage_intf_regs : process(i_clk) is
-	begin
-		if(rising_edge(i_clk)) then
-			if(i_rst = '1') then
-				w_tx_en <= '0';
-				w_tx_reg <= (others => '0');
-			else
-				o_ack <= i_stb;
-				w_tx_en <= '0';
-				if(i_we = '1' and i_stb = '1' and i_addr = '0') then
-					w_tx_reg <= i_data;
-					w_tx_en <= '1';
-				elsif(i_we = '0' and i_stb = '1' and i_addr = '1') then
-					o_data <= w_rx_data;
-				end if;
-			end if;
-		end if;
-	end process; -- manage_intf_regs
+	--manage_intf_regs : process(i_clk) is
+	--begin
+	--	if(rising_edge(i_clk)) then
+	--		if(i_rst = '1') then
+	--			i_tx_en <= '0';
+	--			w_tx_reg <= (others => '0');
+	--		else
+	--			o_ack <= i_stb;
+	--			i_tx_en <= '0';
+	--			if(i_we = '1' and i_stb = '1' and i_addr = '0') then
+	--				i_data <= i_data;
+	--				i_tx_en <= '1';
+	--			elsif(i_we = '0' and i_stb = '1' and i_addr = '1') then
+	--				o_data <= w_rx_data;
+	--			end if;
+	--		end if;
+	--	end if;
+	--end process; -- manage_intf_regs
+
+	o_data <= w_rx_data;
 
 	--counters to create the baud rate pulse and oversample pulse
 	gen_pulse : process(i_clk)
@@ -145,9 +151,9 @@ begin
 					when IDLE =>
 						o_tx <= '1';
 						--if(i_tx_en = '1') then
-						if(w_tx_en = '1') then
+						if(i_tx_en = '1') then
 							--include start ('0') , parity and stop ('1') bits
-							r_tx_data <= '1' & w_tx_parity & w_tx_reg & '0';
+							r_tx_data <= '1' & w_tx_parity & i_data & '0';
 							r_state_tx <= TRANSMIT;
 							cnt_digits_send <=0;
 							o_tx_busy <= '1';
@@ -182,10 +188,10 @@ begin
 	--can detect one error in the transmission, cannot correct it
 	parity : entity work.parity(rtl)
 	generic map(
-		g_width => w_tx_reg'length,
+		g_width => i_data'length,
 		g_parity_type => g_parity_type)
 	port map(
-		i_data => w_tx_reg,
+		i_data => i_data,
 		o_parity_bit => w_tx_parity);
 
 

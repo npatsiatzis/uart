@@ -20,10 +20,12 @@ rtl_dir = tests_dir                                    #path to hdl folder where
 def test_uart(g_word_width,g_sys_clk,g_baud,g_oversample):
 
     module = "testbench"
-    toplevel = "uart"   
+    toplevel = "uart_top"   
     vhdl_sources = [
+        os.path.join(rtl_dir, "../rtl/wb_regs.vhd"),
         os.path.join(rtl_dir, "../rtl/parity.vhd"),
         os.path.join(rtl_dir, "../rtl/uart.vhd"),
+        os.path.join(rtl_dir, "../rtl/uart_top.vhd"),
         ]
 
     parameter = {}
