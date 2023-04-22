@@ -133,7 +133,7 @@ begin
 	--			   2 			|	data received from sdram
 
 
-	f_is_data_to_tx <= '1' when (S_AXI_WVALID = '1' and S_AXI_AWVALID = '1' and unsigned(axil_waddr) = 1) else '0';
+	f_is_data_to_tx <= '1' when (S_AXI_WVALID = '1' and S_AXI_AWVALID = '1' and unsigned(axil_waddr) = 0) else '0';
 
 	manage_write_regs : process(i_clk,i_arst) is
 		variable loc_addr : std_ulogic;

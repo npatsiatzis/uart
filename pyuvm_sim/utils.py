@@ -129,3 +129,79 @@ class UartBfm(metaclass=utility_classes.Singleton):
         cocotb.start_soon(self.driver_bfm())
         cocotb.start_soon(self.data_mon_bfm())
         cocotb.start_soon(self.result_mon_bfm())
+
+
+class AxilUartBfm(metaclass=utility_classes.Singleton):
+    def __init__(self):
+        self.dut = cocotb.top
+        self.driver_queue = Queue(maxsize=1)
+        self.data_mon_queue = Queue(maxsize=0)
+        self.result_mon_queue = Queue(maxsize=0)
+
+    async def send_data(self, data):
+        await self.driver_queue.put(data)
+
+    async def get_data(self):
+        data = await self.data_mon_queue.get()
+        return data
+
+    async def get_result(self):
+        result = await self.result_mon_queue.get()
+        return result
+
+    async def reset(self):
+        # await RisingEdge(self.dut.S_AXI_ACLK)
+        self.dut.S_AXI_ARESETN.value = 0
+        self.dut.S_AXI_AWVALID.value = 0
+        self.dut.S_AXI_AWADDR.value = 0
+        self.dut.S_AXI_WVALID.value = 0
+        self.dut.S_AXI_WDATA.value = 0
+        self.dut.S_AXI_WSTRB.value = 15
+        self.dut.S_AXI_BREADY.value = 0
+        self.dut.S_AXI_ARVALID.value = 0
+        self.dut.S_AXI_ARADDR.value = 0
+        self.dut.S_AXI_RREADY.value = 0
+        await ClockCycles(self.dut.S_AXI_ACLK,5)
+        self.dut.S_AXI_ARESETN.value = 1
+        await RisingEdge(self.dut.S_AXI_ACLK)
+
+
+    async def driver_bfm(self):
+
+        while True:
+            await RisingEdge(self.dut.S_AXI_ACLK)
+            self.dut.i_rx.value = self.dut.o_tx.value
+            try:
+
+                (awvalid,awaddr,wvalid,wdata,bready,arvalid,araddr,rready) = self.driver_queue.get_nowait()
+                self.dut.S_AXI_AWVALID.value = awvalid
+                self.dut.S_AXI_AWADDR.value = awaddr
+                self.dut.S_AXI_WVALID.value = wvalid
+                self.dut.S_AXI_WDATA.value = wdata
+                self.dut.S_AXI_BREADY.value = bready
+                self.dut.S_AXI_ARVALID.value = arvalid
+                self.dut.S_AXI_ARADDR.value = araddr
+                self.dut.S_AXI_RREADY.value = rready
+
+            except QueueEmpty:
+                pass
+
+    async def data_mon_bfm(self):
+        while True:
+            await RisingEdge(self.dut.axil_regs.f_is_data_to_tx)
+            i_data = self.dut.S_AXI_WDATA.value 
+            self.data_mon_queue.put_nowait(i_data)
+
+
+    async def result_mon_bfm(self):
+        while True:
+            await FallingEdge(self.dut.o_rx_busy)
+            await FallingEdge(self.dut.S_AXI_RVALID)
+            await RisingEdge(self.dut.S_AXI_ACLK)
+            self.result_mon_queue.put_nowait(self.dut.o_data.value)
+
+
+    def start_bfm(self):
+        cocotb.start_soon(self.driver_bfm())
+        cocotb.start_soon(self.data_mon_bfm())
+        cocotb.start_soon(self.result_mon_bfm())

@@ -7,9 +7,11 @@ EXTRA_ARGS += --std=08
 SIM_ARGS += --wave=wave.ghw
 
 VHDL_SOURCES += $(PWD)/../rtl/wb_regs.vhd
+VHDL_SOURCES += $(PWD)/../rtl/axil_regs.vhd
 VHDL_SOURCES += $(PWD)/../rtl/parity.vhd
 VHDL_SOURCES += $(PWD)/../rtl/uart.vhd
 VHDL_SOURCES += $(PWD)/../rtl/uart_top.vhd
+VHDL_SOURCES += $(PWD)/../rtl/uart_top_axi.vhd
 # use VHDL_SOURCES for VHDL files
 
 # TOPLEVEL is the name of the toplevel module in your Verilog or VHDL file
@@ -18,6 +20,10 @@ VHDL_SOURCES += $(PWD)/../rtl/uart_top.vhd
 test:
 		rm -rf sim_build
 		$(MAKE) sim MODULE=tb_uart TOPLEVEL=uart_top
+
+test_axi:
+		rm -rf sim_build
+		$(MAKE) sim MODULE=tb_uart_axi TOPLEVEL=uart_top_axi
 
 parity:
 		rm -rf sim_build
