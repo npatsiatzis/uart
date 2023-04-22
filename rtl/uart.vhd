@@ -15,11 +15,6 @@ entity uart is
 		i_clk : in std_ulogic;					--system clock
 		i_rst : in std_ulogic;
 
-		--wishbone b4 (slave) interface
-		--i_we : in std_ulogic; 
-		--i_stb : in std_ulogic;
-		--i_addr : in std_ulogic;
-		--o_ack : out std_ulogic;
 		i_tx_en : in std_ulogic;
 		i_data : in std_ulogic_vector(g_word_width -1 downto 0);	--data to transmit
 		o_data : out std_ulogic_vector(g_word_width -1 downto 0);	--received data

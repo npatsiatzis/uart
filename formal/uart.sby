@@ -13,10 +13,12 @@ task_bmc: smtbmc
 task_cover: smtbmc
 
 [script]
-ghdl --std=08 -gg_sys_clk=20 -gg_baud=1 -gg_oversample=6 parity.vhd uart.vhd uart.psl -e uart
-prep -top uart
+ghdl --std=08 -gg_sys_clk=20 -gg_baud=1 -gg_oversample=6 wb_regs.vhd parity.vhd uart.vhd uart_top.vhd uart.psl -e uart_top
+prep -top uart_top
 
 [files]
 uart.psl
+../rtl/wb_regs.vhd
 ../rtl/parity.vhd
 ../rtl/uart.vhd
+../rtl/uart_top.vhd

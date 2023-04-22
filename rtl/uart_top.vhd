@@ -62,7 +62,7 @@ begin
 		o_tx_reg => w_tx_reg
 		);
 
-	uart : entity work.uart(rtl)
+	uart: entity work.uart(rtl)
 	generic map(
 		g_sys_clk => g_sys_clk,
 		g_baud => g_baud,
