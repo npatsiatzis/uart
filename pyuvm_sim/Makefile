@@ -29,5 +29,11 @@ parity:
 		rm -rf sim_build
 		$(MAKE) sim MODULE=tb_parity TOPLEVEL=parity
 
+clean_dir:
+		rm -f wave.*
+		rm -f *.o 
+		rm -f *.xml
+		find . -maxdepth 1 -type f -executable -exec rm {} +
+		find -mindepth 1 -maxdepth 1 -type d -print0 | xargs -r0 rm -R
 # include cocotb's make rules to take care of the simulator setup
 include $(shell cocotb-config --makefiles)/Makefile.sim
