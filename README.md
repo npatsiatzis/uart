@@ -6,9 +6,10 @@
 
 - uart tx and rx logic
 - configurable baud rate, oversample rate, word width and parity type
-- CoCoTB testbench for functional verification
-    - $ make
-- CoCoTB-test unit testing to exercise the CoCoTB tests across a range of values for the generic parameters
-    - $  SIM=ghdl pytest -n auto -o log_cli=True --junitxml=test-results.xml --cocotbxml=test-cocotb.xml
-- formal verification using SymbiYosys (sby), (properties specified in PSL)
-    - $ make formal
+
+-- RTL code in:
+- [VHDL](https://github.com/npatsiatzis/uart/tree/main/rtl/VHDL)
+
+-- Functional verification with methodologies:
+- [cocotb](https://github.com/npatsiatzis/uart/tree/main/cocotb_sim)
+- [pyuvm](https://github.com/npatsiatzis/uart/tree/main/pyuvm_sim)
