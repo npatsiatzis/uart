@@ -6,12 +6,12 @@ TOPLEVEL_LANG ?= vhdl
 EXTRA_ARGS += --std=08
 SIM_ARGS += --wave=wave.ghw
 
-VHDL_SOURCES += $(PWD)/../rtl/wb_regs.vhd
-VHDL_SOURCES += $(PWD)/../rtl/axil_regs.vhd
-VHDL_SOURCES += $(PWD)/../rtl/parity.vhd
-VHDL_SOURCES += $(PWD)/../rtl/uart.vhd
-VHDL_SOURCES += $(PWD)/../rtl/uart_top.vhd
-VHDL_SOURCES += $(PWD)/../rtl/uart_top_axi.vhd
+VHDL_SOURCES += $(PWD)/../rtl/VHDL/wb_regs.vhd
+VHDL_SOURCES += $(PWD)/../rtl/VHDL/axil_regs.vhd
+VHDL_SOURCES += $(PWD)/../rtl/VHDL/parity.vhd
+VHDL_SOURCES += $(PWD)/../rtl/VHDL/uart.vhd
+VHDL_SOURCES += $(PWD)/../rtl/VHDL/uart_top.vhd
+VHDL_SOURCES += $(PWD)/../rtl/VHDL/uart_top_axi.vhd
 # use VHDL_SOURCES for VHDL files
 
 # TOPLEVEL is the name of the toplevel module in your Verilog or VHDL file

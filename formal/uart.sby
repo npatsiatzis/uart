@@ -18,7 +18,7 @@ prep -top uart_top
 
 [files]
 uart.psl
-../rtl/wb_regs.vhd
-../rtl/parity.vhd
-../rtl/uart.vhd
-../rtl/uart_top.vhd
+../rtl/VHDL/wb_regs.vhd
+../rtl/VHDL/parity.vhd
+../rtl/VHDL/uart.vhd
+../rtl/VHDL/uart_top.vhd

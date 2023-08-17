@@ -85,6 +85,8 @@ async def test(dut):
 		assert not (expected_value != int(dut.o_data.value)),"Different expected to actual read data"
 		coverage_db["top.i_data"].add_threshold_callback(notify, 100)
 		number_cover(dut)
+		print("Run is at {} % coverage".format(coverage_db["top.i_data"].cover_percentage))
+		# coverage_db["top.i_data"].cover_percentage
 	coverage_db.report_coverage(cocotb.log.info,bins=True)
 	coverage_db.export_to_xml(filename="coverage.xml")
 

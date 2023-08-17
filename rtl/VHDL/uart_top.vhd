@@ -54,7 +54,7 @@ begin
 		o_data =>o_data,
 		o_ack => o_ack,
 
-		--data read from sdram
+		--data read from uart rx
 		i_uart_rd_data =>w_rd_data,
 
 		--ports for write regs to hierarchy
