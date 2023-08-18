@@ -9,7 +9,7 @@
 
 -- RTL code in:
 - [VHDL](https://github.com/npatsiatzis/uart/tree/main/rtl/VHDL)
-- [VHDL](https://github.com/npatsiatzis/uart/tree/main/rtl/SystemVerilog)
+- [SystemVerilog](https://github.com/npatsiatzis/uart/tree/main/rtl/SystemVerilog)
 
 -- Functional verification with methodologies:
 - [cocotb](https://github.com/npatsiatzis/uart/tree/main/cocotb_sim)
