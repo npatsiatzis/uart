@@ -95,6 +95,8 @@ class Driver(uvm_driver):
             data.result = result
             self.seq_item_port.item_done()
 
+            print("Run is at {} % coverage".format(coverage_db["top.i_tx_data"].cover_percentage))
+
 
 class Coverage(uvm_subscriber):
 
