@@ -17,7 +17,7 @@ entity wb_regs is
 		o_data : out std_ulogic_vector(g_word_width -1 downto 0);
 		o_ack : out std_ulogic;
 
-		--data read from sdram
+		--data read from uart rx 
 		i_uart_rd_data : in std_ulogic_vector(g_word_width -1 downto 0);
 
 		--ports for write regs to hierarchy
