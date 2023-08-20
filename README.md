@@ -14,3 +14,4 @@
 -- Functional verification with methodologies:
 - [cocotb](https://github.com/npatsiatzis/uart/tree/main/cocotb_sim)
 - [pyuvm](https://github.com/npatsiatzis/uart/tree/main/pyuvm_sim)
+- [uvm](https://github.com/npatsiatzis/uart/tree/main/uvm_sim)
