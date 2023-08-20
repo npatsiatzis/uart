@@ -1,3 +1,86 @@
+// `begin_keywords "1800-2017";
+`default_nettype none
+
+module parity
+    #
+    (
+        parameter int G_WIDTH = 8,
+        parameter bit G_PARITY_TYPE = 1'b1
+    )
+
+    (
+        input  logic [G_WIDTH - 1 : 0] i_data,
+        output logic o_parity_bit
+    );
+
+    always_comb begin : calc_parity
+        logic data_parity;
+        data_parity = ^(i_data);
+        o_parity_bit = G_PARITY_TYPE ^ data_parity;
+    end
+
+endmodule : parity
+
+module wb_regs
+    #
+    (
+        parameter int G_WORD_WIDTH = 8
+    )
+
+    (
+        input logic i_clk,
+        input logic i_rst,
+
+        // wishbone b4 (slave) interface
+        input logic i_we,
+        input logic i_stb,
+        input logic i_addr,
+        input logic [G_WORD_WIDTH - 1 : 0] i_data,
+        output logic [G_WORD_WIDTH - 1 : 0] o_data,
+        output logic o_ack,
+
+        // data read from uart rx
+        input logic [G_WORD_WIDTH - 1 : 0] i_uart_rd_data,
+
+        // internal ports within design hierarchy
+        output logic o_tx_en,
+        output logic [G_WORD_WIDTH - 1 : 0] o_tx_reg,
+        output logic o_data_valid
+    );
+
+    logic [G_WORD_WIDTH -1 : 0] w_tx_reg;
+
+    //                  INTERFACE REGISTER MAP
+
+    //          Address         |       Functionality
+    //             0            |   data to tx (uart TX)
+    //             1            |   received data (uart RX)
+
+    always_ff @(posedge i_clk) begin : manage_inf_regs
+        if(i_rst) begin
+            w_tx_reg <= 0;
+            o_ack <= 1'b0;
+            o_tx_en <= 1'b0;
+            o_data_valid <= 1'b0;
+        end else begin
+            o_ack <= i_stb;
+            o_tx_en <= 1'b0;
+            o_data_valid <= 1'b0;
+
+            if (i_we && i_stb && i_addr == 0) begin
+                w_tx_reg <= i_data;
+                o_tx_en <= 1'b1;
+            end else if (!i_we && i_stb && i_addr == 1)
+                o_data <= i_uart_rd_data;
+                o_data_valid <= 1'b1;
+        end
+    end
+
+    assign o_tx_reg = w_tx_reg;
+
+endmodule : wb_regs
+
+
 `default_nettype none
 
 module uart
@@ -208,3 +291,122 @@ module uart
     end
 
 endmodule : uart
+
+`default_nettype none
+
+module uart_top
+    #
+    (
+        parameter int G_SYS_CLK = 40000000,
+        parameter int G_BAUD = 256000,
+        parameter int G_OVERSAMPLE = 16,
+        parameter int G_WORD_WIDTH = 8,
+        parameter bit G_PARITY_TYPE = 1'b1
+    )
+    (
+        input logic i_clk,
+        input logic i_rst,
+        input logic i_we,
+        input logic i_stb,
+        input logic i_addr,
+        input logic [G_WORD_WIDTH -1 : 0] i_data,
+        output logic o_ack,
+        output logic [G_WORD_WIDTH -1 : 0] o_data,
+
+        output logic o_tx,
+        input logic i_rx,
+
+        output logic o_tx_busy,
+        output logic o_rx_busy,
+        output logic f_rx_busy_prev,
+        output logic o_rx_error,
+
+        output logic o_data_valid
+    );
+
+    logic [G_WORD_WIDTH -1 : 0] w_tx_reg, w_rd_data;
+    logic w_tx_en;
+
+    wb_regs 
+        #(.G_WORD_WIDTH(G_WORD_WIDTH)) 
+        wb_regs_inst
+        (
+            .i_clk(i_clk),
+            .i_rst(i_rst),
+            .i_we(i_we),
+            .i_stb(i_stb),
+            .i_addr(i_addr),
+            .i_data(i_data),
+            .o_data(o_data),
+            .o_ack(o_ack),
+            .i_uart_rd_data(w_rd_data),
+            .o_tx_en(w_tx_en),
+            .o_tx_reg(w_tx_reg),
+            .o_data_valid(o_data_valid)
+        );
+
+        // (.*,.i_uart_rd_data(w_rd_data), .o_tx_en(w_tx_en), .o_tx_reg(w_tx_reg), .o_data(o_data), .o_data_valid(o_data_valid));
+
+    uart
+    #(
+        .G_SYS_CLK(G_SYS_CLK),
+        .G_BAUD       (G_BAUD),
+        .G_OVERSAMPLE (G_OVERSAMPLE),
+        .G_WORD_WIDTH (G_WORD_WIDTH),
+        .G_PARITY_TYPE (G_PARITY_TYPE)
+    )
+    uart_inst
+    (
+        .i_clk(i_clk),
+        .i_rst(i_rst),
+        .i_tx_en(w_tx_en),
+        .i_data(w_tx_reg),
+        .o_data(w_rd_data),
+        .o_tx(o_tx),
+        .i_rx(o_tx),
+        .o_tx_busy(o_tx_busy),
+        .o_rx_busy(o_rx_busy),
+        .o_rx_error(o_rx_error)
+    );
+    // (
+    //     .*, .i_tx_en(w_tx_en), .i_data(w_tx_reg), .o_data(w_rd_data), .i_rx(o_tx),
+    // );
+
+    // for uvm verification purposes 
+    always_ff @(posedge i_clk) begin : o_rx_busy_prev
+        if(i_rst) begin
+            f_rx_busy_prev <= 0;
+        end else begin
+            f_rx_busy_prev <= o_rx_busy;
+        end
+    end
+endmodule : uart_top
+
+
+
+
+interface uart_intf  #(        
+    parameter int G_WORD_WIDTH = 8
+);	
+    logic i_clk;
+    logic i_rst;
+
+    logic i_we;
+    logic i_stb;
+    logic i_addr;
+    logic [G_WORD_WIDTH - 1 : 0] i_data;
+    logic o_ack;
+    logic [G_WORD_WIDTH - 1 : 0] o_data;
+
+    // tx; rx serial lines
+    logic o_tx;
+    logic i_rx;
+
+    // interrupts
+    logic o_tx_busy;
+    logic o_rx_busy;
+    logic o_rx_error;
+    logic o_data_valid;
+    logic f_rx_busy_prev;
+
+endinterface : uart_intf

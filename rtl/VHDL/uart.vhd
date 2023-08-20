@@ -140,7 +140,6 @@ begin
 				cnt_digits_send <=0;				--initialize write pointer
 				r_tx_data <= (others => '0');		--clear data to send 
 				o_tx <= '1';						--keep line raised
-				cnt_digits_send <= 0;
 			else
 				case r_state_tx is 
 					when IDLE =>
