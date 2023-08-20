@@ -149,7 +149,7 @@ module uart
             w_rx_data <= 0;
             r_rx_data <= 0;
             state_rx <= IDLE_RX;
-            cnt_digits_sent <= 0;
+            cnt_digits_received <= 0;
             cnt_oversample_pulses <= 0;
         end else begin
             case (state_rx)

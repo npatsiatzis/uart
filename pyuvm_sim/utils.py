@@ -99,7 +99,8 @@ class UartBfm(metaclass=utility_classes.Singleton):
 
         while True:
             await RisingEdge(self.dut.i_clk)
-            self.dut.i_rx.value = self.dut.o_tx.value
+            # do that either here or on uart_top file
+            # self.dut.i_rx.value = self.dut.o_tx.value 
             try:
                 (i_we,i_stb,i_addr,i_data) = self.driver_queue.get_nowait()
                 self.dut.i_we.value = i_we
