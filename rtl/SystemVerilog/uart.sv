@@ -30,9 +30,9 @@ module uart
 
     // counter to create the baud rate from the system clock
     // Non-type localparam names must be styled with CamelCase (verible lint)
-    localparam int RangeBaud = G_SYS_CLK/G_BAUD;
+    localparam int RangeBaud = G_SYS_CLK/G_BAUD -1;
     // counter to create the oveerasmple rate
-    localparam int RangeOversample = G_SYS_CLK/G_BAUD/G_OVERSAMPLE -1;
+    localparam int RangeOversample = (G_SYS_CLK/G_BAUD)/G_OVERSAMPLE -1;
 
     // pulse signal (1 cycle) @baud rate
     logic r_baud_pulse;
@@ -49,16 +49,16 @@ module uart
     logic w_tx_parity;
 
     // baud and oversample counters
-    logic [$clog2(RangeBaud) - 1 : 0] cnt_baud;
-    logic [$clog2(RangeOversample) - 1 : 0] cnt_oversample;
+    logic [$clog2(RangeBaud) - 1 + ($clog2(RangeBaud+1) - $clog2(RangeBaud)): 0] cnt_baud;
+    logic [$clog2(RangeOversample) - 1 + ($clog2(RangeOversample+1) - $clog2(RangeOversample)): 0] cnt_oversample;
 
     // uart TX FSM signals
     logic [G_WORD_WIDTH - 1 + 3 : 0] r_tx_data;
-    logic [$clog2(G_WORD_WIDTH + 3) -1 : 0] cnt_digits_sent;
+    logic [$clog2(G_WORD_WIDTH + 3) -1 + ($clog2(G_WORD_WIDTH +4) - $clog2(G_WORD_WIDTH +3)): 0] cnt_digits_sent;
 
     // uart RX FSM signals
-    logic [$clog2(G_OVERSAMPLE) - 1 : 0] cnt_oversample_pulses;
-    logic [$clog2(G_WORD_WIDTH + 2) - 1 : 0] cnt_digits_received;
+    logic [$clog2(G_OVERSAMPLE) - 1  + ($clog2(G_OVERSAMPLE+1) - $clog2(G_OVERSAMPLE)): 0] cnt_oversample_pulses;
+    logic [$clog2(G_WORD_WIDTH + 2) - 1 + ($clog2(G_WORD_WIDTH +3) - $clog2(G_WORD_WIDTH +2)): 0] cnt_digits_received;
     // rx data stream including the data plus parity and end bit
     logic [G_WORD_WIDTH + 1 : 0] r_rx_data;
     logic [G_WORD_WIDTH - 1 : 0] w_rx_data;
@@ -69,25 +69,25 @@ module uart
 
     always_ff @(posedge i_clk) begin : gen_pulse
         if(i_rst) begin
-            cnt_baud <= '0;
+            cnt_baud <= 0;
             r_baud_pulse <= 1'b0;
-            cnt_oversample <= '0;
+            cnt_oversample <= 0;
             r_oversample_pulse <= 1'b0;
         end else begin
             if ($size(RangeBaud)'(cnt_baud) < RangeBaud) begin
                 cnt_baud <= cnt_baud + 1;
                 r_baud_pulse <= 1'b0;
             end else begin
-                cnt_baud <= '0;
+                cnt_baud <= 0;
                 r_baud_pulse <= 1'b1;
-                cnt_oversample <= '0;
+                cnt_oversample <= 0;
             end
 
             if ($size(RangeOversample)'(cnt_oversample) < RangeOversample) begin
                 cnt_oversample <= cnt_oversample + 1;
                 r_oversample_pulse <= 1'b0;
             end else begin
-                cnt_oversample <= '0;
+                cnt_oversample <= 0;
                 r_oversample_pulse <= 1'b1;
             end
         end
@@ -97,8 +97,8 @@ module uart
         if(i_rst) begin
             o_tx_busy <= 1'b0;
             state_tx <= IDLE_TX;
-            cnt_digits_sent <= '0;
-            r_tx_data <= '0;
+            cnt_digits_sent <= 0;
+            r_tx_data <= 0;
             o_tx <= 1'b1;
         end else begin
             case (state_tx)
