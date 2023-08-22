@@ -244,25 +244,15 @@ class OutMon {
         std::shared_ptr<Scb> scb;
         // OutCoverage *cvg;
         std::shared_ptr<OutCoverage> cvg;
-        VerilatedVcdC * m_trace;
     public:
-        OutMon(VerilatedVcdC *m_trace,std::shared_ptr<Vuart_top> dut, std::shared_ptr<Scb> scb, std::shared_ptr<OutCoverage> cvg){
+        OutMon(std::shared_ptr<Vuart_top> dut, std::shared_ptr<Scb> scb, std::shared_ptr<OutCoverage> cvg){
             this->dut = dut;
             this->scb = scb;
             this->cvg = cvg;
-            this->m_trace = m_trace;
         }
 
         void monitor(){
             if(dut->i_we == 0 && dut->i_stb == 1 && dut->i_addr == 1){
-                dut->i_clk ^= 1;
-                dut->eval();
-                m_trace->dump(sim_time);
-                sim_time++;
-                dut->i_clk ^= 1;
-                dut->eval();
-                m_trace->dump(sim_time);
-                sim_time++;
 
                 OutTx *tx = new OutTx();
                 tx->o_data = dut->o_data;
@@ -336,13 +326,16 @@ int main(int argc, char** argv, char** env) {
     std::shared_ptr<InCoverage> inCoverage(new InCoverage());
     std::shared_ptr<OutCoverage> outCoverage(new OutCoverage());
     std::unique_ptr<InMon> inMon(new InMon(dut,scb,inCoverage));
-    std::unique_ptr<OutMon> outMon(new OutMon(m_trace,dut,scb,outCoverage));
+    std::unique_ptr<OutMon> outMon(new OutMon(dut,scb,outCoverage));
     std::unique_ptr<Sequence> sequence(new Sequence(inCoverage));
 
     while (outCoverage->is_full_coverage() == false) {
         dut_reset(dut, sim_time);
         dut->i_clk ^= 1;
         dut->eval();
+
+        m_trace->dump(sim_time);
+        sim_time++;
 
         // Do all the driving/monitoring on a positive edge
         if (dut->i_clk == 1){
@@ -371,12 +364,8 @@ int main(int argc, char** argv, char** env) {
                 outMon->monitor();
             }
         }
-        // end of positive edge processing
 
-        m_trace->dump(sim_time);
-        sim_time++;
     }
-
     m_trace->close();  
     exit(EXIT_SUCCESS);
 }
