@@ -127,10 +127,12 @@ module uart
                         end
                     end
                 end
+                /*verilator coverage_off*/
                 default : begin
                     o_tx_busy <= 1'b0;
                     o_tx <= 1'b1;
                     state_tx <= IDLE_TX;
+                /*verilator coverage_on*/
                 end
             endcase
         end
@@ -188,21 +190,25 @@ module uart
                                 cnt_digits_received <= 0;
                                 o_rx_busy <= 1'b0;
                                 w_rx_data <= r_rx_data[$high(r_rx_data) -2 : 0];
+                                /*verilator coverage_off*/
                                 if ( !r_rx_data[$high(r_rx_data)])
                                     o_rx_error <= 1'b1;
                                 if ( ^({r_rx_data[$high(r_rx_data) - 2 : 0], G_PARITY_TYPE})
                                     != G_PARITY_TYPE)
                                     o_rx_error <= 1'b1;
+                                /*verilator coverage_on*/
                             end
                         end
                     end
                 end
+                /*verilator coverage_off*/
                 default : begin
                     o_rx_busy <= 1'b1;
                     o_rx_error <= 1'b0;
                     w_rx_data <= 0;
                     state_rx <= IDLE_RX;
                 end
+                /*verilator coverage_on*/
             endcase
         end
     end

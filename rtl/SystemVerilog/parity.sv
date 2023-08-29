@@ -12,10 +12,13 @@ module parity
         output logic o_parity_bit
     );
 
-    always_comb begin : calc_parity
-        logic data_parity;
-        data_parity = ^(i_data);
-        o_parity_bit = G_PARITY_TYPE ^ data_parity;
-    end
+    logic data_parity;
+    assign data_parity = ^(i_data);
+    assign o_parity_bit = G_PARITY_TYPE ^ data_parity;
+
+    // always_comb begin : calc_parity
+        // data_parity = ^(i_data);
+        // o_parity_bit = G_PARITY_TYPE ^ data_parity;
+    // end
 
 endmodule : parity
