@@ -19,4 +19,4 @@ jobs:
 # We run make from inside the container, overriding default entry point (Verilator binary itself)
 # You may prefer to build install Verilator from git locally (slower but avoids docker)
       - name: Verilate
-        run: docker run -v ${PWD}:/work --user $(id -u):$(id -g) -w /work/verilator_sim -e CCACHE_DIR=/work/.ccache --entrypoint make verilator/verilator:stable 
+        run: docker run -v ${PWD}:/work ${PWD}/verilator_sim:/work/verilator_sim ${PWD}/rtl/SystemVerilog:/work/rtl/SystemVerilog --user $(id -u):$(id -g) -w /work/verilator_sim -e CCACHE_DIR=/work/.ccache --entrypoint make verilator/verilator:stable 
