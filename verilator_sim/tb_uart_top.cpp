@@ -3,8 +3,11 @@
 #include <iostream>
 #include <cstdlib>
 #include <memory>
+#include <set>
+#include <deque>
 #include <verilated.h>
 #include <verilated_vcd_c.h>
+#include <verilated_cov.h>
 #include "Vuart_top.h"
 #include "Vuart_top_uart_top.h"   //to get parameter values, after they've been made visible in SV
 
@@ -310,8 +313,8 @@ int main(int argc, char** argv, char** env) {
     srand (time(NULL));
     Verilated::commandArgs(argc, argv);
     // Vuart_top *dut = new Vuart_top;
-    std::shared_ptr<VerilatedContext> contextp{new VerilatedContext};
-    std::shared_ptr<Vuart_top> dut(new Vuart_top{contextp.get(), "TOP"});
+    // std::shared_ptr<VerilatedContext> contextp{new VerilatedContext};
+    std::shared_ptr<Vuart_top> dut(new Vuart_top);
 
     Verilated::traceEverOn(true);
     VerilatedVcdC *m_trace = new VerilatedVcdC;
@@ -330,6 +333,11 @@ int main(int argc, char** argv, char** env) {
     std::unique_ptr<Sequence> sequence(new Sequence(inCoverage));
 
     while (outCoverage->is_full_coverage() == false) {
+        // random reset 
+        // 0-> all 0s
+        // 1 -> all 1s
+        // 2 -> all random
+        Verilated::randReset(2);    
         dut_reset(dut, sim_time);
         dut->i_clk ^= 1;
         dut->eval();
@@ -366,6 +374,9 @@ int main(int argc, char** argv, char** env) {
         }
 
     }
+
+    // mkdir("logs",0777);
+    VerilatedCov::write();
     m_trace->close();  
     exit(EXIT_SUCCESS);
 }
