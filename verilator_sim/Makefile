@@ -2,6 +2,18 @@ TOPLEVEL = uart_top
 MODULE = tb_$(TOPLEVEL).cpp
 RTL_DIR = $(PWD)/../rtl/SystemVerilog
 
+# If $VERILATOR_ROOT isn't in the environment, we assume it is part of a
+# package install, and verilator is in your path. Otherwise find the
+# binary relative to $VERILATOR_ROOT (such as when inside the git sources).
+ifeq ($(VERILATOR_ROOT),)
+VERILATOR = verilator
+VERILATOR_COVERAGE = verilator_coverage
+else
+export VERILATOR_ROOT
+VERILATOR = $(VERILATOR_ROOT)/bin/verilator
+VERILATOR_COVERAGE = $(VERILATOR_ROOT)/bin/verilator_coverage
+endif
+
 .PHONY:sim
 sim: waveform.vcd
 
@@ -30,14 +42,14 @@ waveform.vcd: ./obj_dir/V$(TOPLEVEL)
 .stamp.verilate: $(RTL_DIR)/$(TOPLEVEL).sv tb_$(TOPLEVEL).cpp
 	@echo
 	@echo "### VERILATING ###"
-	@verilator --build -j --coverage-line --trace --trace-coverage -Wall --trace --x-assign unique --x-initial unique -I$(RTL_DIR) -cc $(RTL_DIR)/$(TOPLEVEL).sv --exe tb_$(TOPLEVEL).cpp
+	@$(VERILATOR) --build -j --coverage-line --trace --trace-coverage -Wall --trace --x-assign unique --x-initial unique -I$(RTL_DIR) -cc $(RTL_DIR)/$(TOPLEVEL).sv --exe tb_$(TOPLEVEL).cpp
 	@touch .stamp.verilate
 
 
 .PHONY:line_coverage
 line_coverage: sim
 	@echo "### Getting Line Coverage information ###"
-	@verilator_coverage --annotate annotated --annotate-min 1 -write-info annotated/merged.info coverage.dat
+	@$(VERILATOR_COVERAGE) --annotate annotated --annotate-min 1 -write-info annotated/merged.info coverage.dat
 
 .PHONY:html_coverage
 html_coverage: line_coverage
