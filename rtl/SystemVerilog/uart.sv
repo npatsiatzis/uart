@@ -1,3 +1,4 @@
+`begin_keywords "1800-2017";
 `default_nettype none
 
 module uart

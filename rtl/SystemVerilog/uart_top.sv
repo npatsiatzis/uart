@@ -21,7 +21,9 @@ module uart_top
 
         output logic o_tx,
         /* verilator lint_off UNUSED */
+        /*verilator coverage_off*/      // needed for toggle coverage, since it's not used
         input logic i_rx,
+        /*verilator coverage_on*/
         /* verilator lint_on UNUSED */
 
         output logic o_tx_busy,
