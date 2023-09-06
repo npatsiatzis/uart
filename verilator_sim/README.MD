@@ -1,3 +1,5 @@
+![example workflow](https://github.com/npatsiatzis/uart/actions/workflows/verilator_regression.yml/badge.svg)
+
 ### simple uart RTL implementation
 
 - uart tx and rx logic
