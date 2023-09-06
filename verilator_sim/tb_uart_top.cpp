@@ -375,8 +375,8 @@ int main(int argc, char** argv, char** env) {
 
     }
 
-    // mkdir("logs",0777);
-    VerilatedCov::write();
+    Verilated::mkdir("logs");
+    VerilatedCov::write("logs/coverage.dat");
     m_trace->close();  
     exit(EXIT_SUCCESS);
 }
