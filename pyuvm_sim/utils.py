@@ -123,6 +123,7 @@ class UartBfm(metaclass=utility_classes.Singleton):
         while True:
             await FallingEdge(self.dut.o_rx_busy)
             await RisingEdge(self.dut.o_ack)
+            await FallingEdge(self.dut.i_clk)
             self.result_mon_queue.put_nowait(self.dut.o_data.value)
 
 

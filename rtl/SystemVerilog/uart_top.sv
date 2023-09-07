@@ -6,7 +6,7 @@ module uart_top
         parameter int g_sys_clk = 40000000,
         parameter int g_baud = 256000,
         parameter int g_oversample = 16,
-        parameter int g_word_width /*verilator public*/ = 8,
+        parameter int g_word_width /*verilator public*/ = 4,
         parameter bit g_parity_type = 1'b0
     )
     (
