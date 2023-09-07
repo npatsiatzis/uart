@@ -67,7 +67,7 @@ class OutCoverage {
         bool is_full_coverage(){
             // std::cout << "OUT COVERAGE size = " << coverage.size() << std::endl;
             // std::cout << "OUT COVERAGE = " << cvg_size << std::endl;
-            return cvg_size == (2 << (Vuart_top_uart_top::G_WORD_WIDTH-1));
+            return cvg_size == (2 << (Vuart_top_uart_top::g_word_width-1));
         }
 };
 
@@ -287,12 +287,12 @@ class Sequence{
             in = new InTx();
             // std::shared_ptr<InTx> in(new InTx());
             // if(rand()%5 == 0){
-            in->i_data = rand() % (1 << Vuart_top_uart_top::G_WORD_WIDTH);  
-            // in->B = rand() % (1 << Vuart_top_uart_top::G_WORD_WIDTH);  
+            in->i_data = rand() % (1 << Vuart_top_uart_top::g_word_width);  
+            // in->B = rand() % (1 << Vuart_top_uart_top::g_word_width);  
 
             while(cvg->is_covered(in->i_data) == false){
-                in->i_data = rand() % (1 << Vuart_top_uart_top::G_WORD_WIDTH);  
-                // in->B = rand() % (1 << Vuart_top_uart_top::G_WORD_WIDTH); 
+                in->i_data = rand() % (1 << Vuart_top_uart_top::g_word_width);  
+                // in->B = rand() % (1 << Vuart_top_uart_top::g_word_width); 
             }
             return in;
             // } else {
