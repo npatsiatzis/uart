@@ -3,11 +3,11 @@
 module uart_top
     #
     (
-        parameter int G_SYS_CLK = 40000000,
-        parameter int G_BAUD = 256000,
-        parameter int G_OVERSAMPLE = 16,
-        parameter int G_WORD_WIDTH /*verilator public*/ = 8,
-        parameter bit G_PARITY_TYPE = 1'b0
+        parameter int g_sys_clk = 40000000,
+        parameter int g_baud = 256000,
+        parameter int g_oversample = 16,
+        parameter int g_word_width /*verilator public*/ = 8,
+        parameter bit g_parity_type = 1'b0
     )
     (
         input logic i_clk,
@@ -15,9 +15,9 @@ module uart_top
         input logic i_we,
         input logic i_stb,
         input logic i_addr,
-        input logic [G_WORD_WIDTH -1 : 0] i_data,
+        input logic [g_word_width -1 : 0] i_data,
         output logic o_ack,
-        output logic [G_WORD_WIDTH -1 : 0] o_data,
+        output logic [g_word_width -1 : 0] o_data,
 
         output logic o_tx,
         /* verilator lint_off UNUSED */
@@ -34,11 +34,11 @@ module uart_top
         output logic o_data_valid
     );
 
-    logic [G_WORD_WIDTH -1 : 0] w_tx_reg, w_rd_data;
+    logic [g_word_width -1 : 0] w_tx_reg, w_rd_data;
     logic w_tx_en;
 
     wb_regs 
-        #(.G_WORD_WIDTH(G_WORD_WIDTH)) 
+        #(.G_WORD_WIDTH(g_word_width)) 
         wb_regs_inst
         (
             .i_clk(i_clk),
@@ -59,11 +59,11 @@ module uart_top
 
     uart
     #(
-        .G_SYS_CLK(G_SYS_CLK),
-        .G_BAUD       (G_BAUD),
-        .G_OVERSAMPLE (G_OVERSAMPLE),
-        .G_WORD_WIDTH (G_WORD_WIDTH),
-        .G_PARITY_TYPE (G_PARITY_TYPE)
+        .G_SYS_CLK(g_sys_clk),
+        .G_BAUD       (g_baud),
+        .G_OVERSAMPLE (g_oversample),
+        .G_WORD_WIDTH (g_word_width),
+        .G_PARITY_TYPE (g_parity_type)
     )
     uart_inst
     (
@@ -90,4 +90,12 @@ module uart_top
             f_rx_busy_prev <= o_rx_busy;
         end
     end
+
+    `ifdef WAVEFORM
+        initial begin
+            // Dump waves
+            $dumpfile("dump.vcd");
+            $dumpvars(0, uart_top);
+        end
+    `endif
 endmodule : uart_top
