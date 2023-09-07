@@ -28,12 +28,16 @@ module wb_regs
     );
 
     logic [G_WORD_WIDTH -1 : 0] w_tx_reg;
+    logic f_is_data_to_tx;
 
     //                  INTERFACE REGISTER MAP
 
     //          Address         |       Functionality
     //             0            |   data to tx (uart TX)
     //             1            |   received data (uart RX)
+
+
+    assign f_is_data_to_tx = (i_we && i_stb && i_addr == 0) ? 1'b1 : 1'b0;
 
     always_ff @(posedge i_clk) begin : manage_inf_regs
         if(i_rst) begin

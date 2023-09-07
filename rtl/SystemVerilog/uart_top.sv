@@ -39,7 +39,7 @@ module uart_top
 
     wb_regs 
         #(.G_WORD_WIDTH(g_word_width)) 
-        wb_regs_inst
+        wb_regs
         (
             .i_clk(i_clk),
             .i_rst(i_rst),
@@ -65,7 +65,7 @@ module uart_top
         .G_WORD_WIDTH (g_word_width),
         .G_PARITY_TYPE (g_parity_type)
     )
-    uart_inst
+    uart
     (
         .i_clk(i_clk),
         .i_rst(i_rst),
