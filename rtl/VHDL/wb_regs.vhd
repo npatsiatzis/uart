@@ -22,7 +22,8 @@ entity wb_regs is
 
 		--ports for write regs to hierarchy
 		o_tx_en : out std_ulogic;
-		o_tx_reg : out std_ulogic_vector(g_word_width -1 downto 0)); 
+		o_tx_reg : out std_ulogic_vector(g_word_width -1 downto 0);
+		o_data_valid : out std_ulogic); 
 end wb_regs;
 
 architecture rtl of wb_regs is
@@ -39,21 +40,26 @@ begin
 
 	f_is_data_to_tx <= '1' when (i_we = '1' and i_stb = '1' and i_addr = '0') else '0';
 
-	manage_intf_regs : process(i_clk,i_rst) is
+	manage_intf_regs : process(i_clk) is
 	begin
-		if(i_rst = '1') then
-			w_tx_reg <= (others => '0');
-			o_ack <= '0';
-			o_tx_en <= '0';
-		elsif (rising_edge(i_clk)) then
-			o_ack <= i_stb;
-			o_tx_en <= '0';
+		if (rising_edge(i_clk)) then
+			if(i_rst = '1') then
+				w_tx_reg <= (others => '0');
+				o_ack <= '0';
+				o_tx_en <= '0';
+				o_data_valid <= '0';
+			else
+				o_ack <= i_stb;
+				o_tx_en <= '0';
+				o_data_valid <= '0';
+				if(i_we = '1' and i_stb = '1' and i_addr = '0') then
+					w_tx_reg <= i_data;
+					o_tx_en <= '1';
+				elsif (i_we = '0' and i_stb = '1' and i_addr = '1') then
+					o_data <= i_uart_rd_data;
+					o_data_valid <= '1';
 
-			if(i_we = '1' and i_stb = '1' and i_addr = '0') then
-				w_tx_reg <= i_data;
-				o_tx_en <= '1';
-			elsif (i_we = '0' and i_stb = '1' and i_addr = '1') then
-				o_data <= i_uart_rd_data;
+				end if;
 			end if;
 		end if;
 	end process; -- manage_intf_regs
