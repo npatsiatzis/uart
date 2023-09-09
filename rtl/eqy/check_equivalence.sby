@@ -1,0 +1,11 @@
+[gold]
+read_verilog -sv ../SystemVerilog/*.sv
+prep -top uart_top
+
+[gate]
+ghdl --std=08 ../VHDL/uart_top.vhd ../VHDL/uart.vhd ../VHDL/wb_regs.vhd ../VHDL/parity.vhd  -e uart_top
+prep -top uart_top
+
+[strategy simple]
+use sat
+depth 30
