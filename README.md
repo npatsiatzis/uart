@@ -11,16 +11,6 @@
 - uart tx and rx logic
 - configurable baud rate, oversample rate, word width and parity type
 
--- RTL code in:
-- [VHDL](https://github.com/npatsiatzis/uart/tree/main/rtl/VHDL)
-- [SystemVerilog](https://github.com/npatsiatzis/uart/tree/main/rtl/SystemVerilog)
-
--- Functional verification with methodologies:
-- [cocotb](https://github.com/npatsiatzis/uart/tree/main/cocotb_sim)
-- [pyuvm](https://github.com/npatsiatzis/uart/tree/main/pyuvm_sim)
-- [uvm](https://github.com/npatsiatzis/uart/tree/main/uvm_sim)
-- [verilator](https://github.com/npatsiatzis/uart/tree/main/verilator_sim)
-
 
 ### Repo Structure
 
@@ -39,7 +29,7 @@ This is a short tabular description of the contents of each folder in the repo.
 | [formal](https://github.com/npatsiatzis/uart/tree/main/formal) | Formal Verification using  PSL properties and [YoysHQ/sby](https://github.com/YosysHQ/oss-cad-suite-build) |
 
 
-This is<!--  the tree view of the strcture of the repo.
+This is the tree view of the strcture of the repo.
 <pre>
 <font size = "2">
 .
@@ -68,4 +58,4 @@ This is<!--  the tree view of the strcture of the repo.
 └── <font size = "4"><b><a href="https://github.com/npatsiatzis/uart/tree/main/formal">formal</a></b></font>
     ├── Makefile
     └── PSL properties file, scripts
-</pre> -->
+</pre>
