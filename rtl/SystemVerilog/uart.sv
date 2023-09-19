@@ -1,4 +1,4 @@
-`begin_keywords "1800-2017";
+// `begin_keywords "1800-2017";
 `default_nettype none
 
 module uart
@@ -26,7 +26,9 @@ module uart
         // interrupts
         output logic o_tx_busy,
         output logic o_rx_busy,
-        output logic o_rx_error
+        /*verilator coverage_off*/ 
+        output logic o_rx_error     //o_rx_error must never toggle to '1', assertion checks so
+        /*verilator coverage_on*/
     );
 
     // counter to create the baud rate from the system clock
@@ -131,7 +133,7 @@ module uart
                 /*verilator coverage_off*/
                 default : begin
                     o_tx_busy <= 1'b0;
-                    o_tx <= 1'b1;
+                    // o_tx <= 1'b1;
                     state_tx <= IDLE_TX;
                 /*verilator coverage_on*/
                 end
@@ -194,7 +196,7 @@ module uart
                                 /*verilator coverage_off*/
                                 if ( !r_rx_data[$high(r_rx_data)])
                                     o_rx_error <= 1'b1;
-                                if ( ^({r_rx_data[$high(r_rx_data) - 2 : 0], G_PARITY_TYPE})
+                                if ( ^({r_rx_data[$high(r_rx_data) - 2 : 0], w_tx_parity})
                                     != G_PARITY_TYPE)
                                     o_rx_error <= 1'b1;
                                 /*verilator coverage_on*/
@@ -206,12 +208,18 @@ module uart
                 default : begin
                     o_rx_busy <= 1'b1;
                     o_rx_error <= 1'b0;
-                    w_rx_data <= 0;
+                    // w_rx_data <= 0;
                     state_rx <= IDLE_RX;
                 end
                 /*verilator coverage_on*/
             endcase
         end
     end
+
+`ifdef USE_VERILATOR
+    check_rx_error : assert property (@(posedge i_clk) !o_rx_error);
+    cover_state_TX : cover property (@(posedge i_clk) state_tx ==IDLE_TX && $past(state_tx) == TRANSMIT);
+    cover_state_RX : cover property (@(posedge i_clk) state_rx ==IDLE_RX && $past(state_tx) == RECEIVE);
+`endif
 
 endmodule : uart
