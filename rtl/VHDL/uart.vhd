@@ -170,7 +170,7 @@ begin
 						end if;
 					when others =>
 						o_tx_busy <= '0';
-						o_tx <= '1';
+						--o_tx <= '1';
 						r_state_tx <= IDLE;
 				end case;
 			end if;
@@ -253,7 +253,7 @@ begin
 										o_rx_error <= '1';
 									end if;
 									--detect Parity Error
-									if(xor((r_rx_data(r_rx_data'high -2 downto 0) & g_parity_type)) /= g_parity_type)then
+									if(xor((r_rx_data(r_rx_data'high -2 downto 0) & w_tx_parity)) /= g_parity_type)then
 										o_rx_error <= '1'; 
 									end if;
 								end if;
@@ -262,7 +262,7 @@ begin
 					when others =>
 						o_rx_busy <= '1';
 						o_rx_error <= '0';
-						w_rx_data <= (others => '0');
+						--w_rx_data <= (others => '0');
 						r_state_rx <= IDLE;
 				end case;
 			end if;
