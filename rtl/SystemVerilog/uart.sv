@@ -1,5 +1,6 @@
 // `begin_keywords "1800-2017";
 `default_nettype none
+`include "pkg.vh"
 
 module uart
     #
@@ -31,6 +32,8 @@ module uart
         /*verilator coverage_on*/
     );
 
+    import pkg::*;
+
     // counter to create the baud rate from the system clock
     // Non-type localparam names must be styled with CamelCase (verible lint)
     localparam int RangeBaud = G_SYS_CLK/G_BAUD -1;
@@ -43,8 +46,8 @@ module uart
     logic r_oversample_pulse;
 
     // states of uart TX,RX FSMs
-    typedef enum logic {IDLE_RX, RECEIVE} states_rx_t;
-    typedef enum logic {IDLE_TX, TRANSMIT} states_tx_t;
+    // typedef enum logic {IDLE_RX, RECEIVE} states_rx_t;
+    // typedef enum logic {IDLE_TX, TRANSMIT} states_tx_t;
     states_rx_t state_rx;
     states_tx_t state_tx;
 
@@ -205,6 +208,7 @@ module uart
                     end
                 end
                 /*verilator coverage_off*/
+                
                 default : begin
                     o_rx_busy <= 1'b1;
                     o_rx_error <= 1'b0;
@@ -216,10 +220,10 @@ module uart
         end
     end
 
-`ifdef USE_VERILATOR
-    check_rx_error : assert property (@(posedge i_clk) !o_rx_error);
-    cover_state_TX : cover property (@(posedge i_clk) state_tx ==IDLE_TX && $past(state_tx) == TRANSMIT);
-    cover_state_RX : cover property (@(posedge i_clk) state_rx ==IDLE_RX && $past(state_tx) == RECEIVE);
-`endif
+// `ifdef USE_VERILATOR
+//     check_rx_error : assert property (@(posedge i_clk) !o_rx_error);
+//     cover_state_TX : cover property (@(posedge i_clk) state_tx ==IDLE_TX && $past(state_tx) == TRANSMIT);
+//     cover_state_RX : cover property (@(posedge i_clk) state_rx ==IDLE_RX && $past(state_tx) == RECEIVE);
+// `endif
 
 endmodule : uart

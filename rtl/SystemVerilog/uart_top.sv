@@ -1,4 +1,7 @@
 `default_nettype none
+`ifdef USE_VERILATOR
+`include "assertion.sv"
+`endif
 
 module uart_top
     #
@@ -83,6 +86,18 @@ module uart_top
     // (
     //     .*, .i_tx_en(w_tx_en), .i_data(w_tx_reg), .o_data(w_rd_data), .i_rx(o_tx),
     // );
+
+
+    // Note: Verilator only ssupports bind to a target module name, NOT to an instance path.
+    bind uart assertion inst
+    (
+        .state_rx(uart.state_rx),
+        .state_tx(uart.state_tx),
+        .i_clk(i_clk),
+        .i_rst(i_rst),
+        .o_rx_error(o_rx_error)
+    );
+
 
     // for uvm verification purposes 
     always_ff @(posedge i_clk) begin : gen_rx_busy_prev
