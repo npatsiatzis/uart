@@ -1,0 +1,259 @@
++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++       REPORT INFO       ++++++++++
++++++++++++++++++++++++++++++++++++++++++++++
+
+
+SUMMARY
+===============================================
+|     Property     |          Value           |
+===============================================
+| User             | runner                   |
+| Host             | b77f5a8f55cb             |
+| Tool             | Riviera-PRO 2022.04      |
+| Report file      | /home/runner/f_cov.txt   |
+| Report date      | 2023-09-30 05:06         |
+| Report arguments | -verbose                 |
+| Input file       | /home/runner/fcover.acdb |
+| Input file date  | 2023-09-30 05:06         |
+| Number of tests  | 1                        |
+===============================================
+
+
+TEST DETAILS
+==============================================
+| Property |              Value              |
+==============================================
+| Test     | fcover.acdb:fcover              |
+| Status   | Ok                              |
+| Args     | asim +access+r                  |
+| Simtime  | 998910 ns                       |
+| Cputime  | 6.488 s                         |
+| Seed     | 1                               |
+| Date     | 2023-09-30 05:06                |
+| User     | runner                          |
+| Host     | b77f5a8f55cb                    |
+| Host os  | Linux64                         |
+| Tool     | Riviera-PRO 2022.04 (simulator) |
+==============================================
+
+
++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++     DESIGN HIERARCHY    ++++++++++
++++++++++++++++++++++++++++++++++++++++++++++
+
+
+CUMULATIVE SUMMARY
+=============================================
+|    Coverage Type    | Weight | Hits/Total |
+=============================================
+| Covergroup Coverage |      1 |   100.000% |
+|---------------------|--------|------------|
+| Types               |        |      1 / 1 |
+=============================================
+CUMULATIVE INSTANCE-BASED COVERAGE: 100.000%
+COVERED INSTANCES: 1 / 1
+FILES: 1
+
+
+CLASS - /\package testbench_pkg\/rand_sequence : work.testbench_pkg/\testbench_pkg rand_sequence \
+
+
+    SUMMARY
+    =============================================
+    |    Coverage Type    | Weight | Hits/Total |
+    =============================================
+    | Covergroup Coverage |      1 |   100.000% |
+    |---------------------|--------|------------|
+    | Types               |        |      1 / 1 |
+    =============================================
+    WEIGHTED AVERAGE LOCAL: 100.000%
+
+
+    COVERGROUP COVERAGE
+    ==================================================================================
+    |                   Covergroup                   |   Hits   |  Goal /  | Status  |
+    |                                                |          | At Least |         |
+    ==================================================================================
+    | TYPE /\package testbench_pkg\/rand_sequence/cg | 100.000% | 100.000% | Covered |
+    ==================================================================================
+    | INSTANCE <UNNAMED1>                            | 100.000% | 100.000% | Covered |
+    |------------------------------------------------|----------|----------|---------|
+    | COVERPOINT <UNNAMED1>::data                    | 100.000% | 100.000% | Covered |
+    |------------------------------------------------|----------|----------|---------|
+    | bin range_data[0]                              |        4 |        1 | Covered |
+    | bin range_data[1]                              |        8 |        1 | Covered |
+    | bin range_data[2]                              |        3 |        1 | Covered |
+    | bin range_data[3]                              |        4 |        1 | Covered |
+    | bin range_data[4]                              |        2 |        1 | Covered |
+    | bin range_data[5]                              |        2 |        1 | Covered |
+    | bin range_data[6]                              |        2 |        1 | Covered |
+    | bin range_data[7]                              |        3 |        1 | Covered |
+    | bin range_data[8]                              |        4 |        1 | Covered |
+    | bin range_data[9]                              |        4 |        1 | Covered |
+    | bin range_data[10]                             |        8 |        1 | Covered |
+    | bin range_data[11]                             |        7 |        1 | Covered |
+    | bin range_data[12]                             |        2 |        1 | Covered |
+    | bin range_data[13]                             |        3 |        1 | Covered |
+    | bin range_data[14]                             |        6 |        1 | Covered |
+    | bin range_data[15]                             |        4 |        1 | Covered |
+    | bin range_data[16]                             |        5 |        1 | Covered |
+    | bin range_data[17]                             |        3 |        1 | Covered |
+    | bin range_data[18]                             |        2 |        1 | Covered |
+    | bin range_data[19]                             |        4 |        1 | Covered |
+    | bin range_data[20]                             |        6 |        1 | Covered |
+    | bin range_data[21]                             |        3 |        1 | Covered |
+    | bin range_data[22]                             |        2 |        1 | Covered |
+    | bin range_data[23]                             |        4 |        1 | Covered |
+    | bin range_data[24]                             |        6 |        1 | Covered |
+    | bin range_data[25]                             |        3 |        1 | Covered |
+    | bin range_data[26]                             |        3 |        1 | Covered |
+    | bin range_data[27]                             |        5 |        1 | Covered |
+    | bin range_data[28]                             |        3 |        1 | Covered |
+    | bin range_data[29]                             |        5 |        1 | Covered |
+    | bin range_data[30]                             |        1 |        1 | Covered |
+    | bin range_data[31]                             |        3 |        1 | Covered |
+    | bin range_data[32]                             |        3 |        1 | Covered |
+    | bin range_data[33]                             |        4 |        1 | Covered |
+    | bin range_data[34]                             |        5 |        1 | Covered |
+    | bin range_data[35]                             |        5 |        1 | Covered |
+    | bin range_data[36]                             |        6 |        1 | Covered |
+    | bin range_data[37]                             |        7 |        1 | Covered |
+    | bin range_data[38]                             |        2 |        1 | Covered |
+    | bin range_data[39]                             |        1 |        1 | Covered |
+    | bin range_data[40]                             |        1 |        1 | Covered |
+    | bin range_data[41]                             |        3 |        1 | Covered |
+    | bin range_data[42]                             |        5 |        1 | Covered |
+    | bin range_data[43]                             |        4 |        1 | Covered |
+    | bin range_data[44]                             |        2 |        1 | Covered |
+    | bin range_data[45]                             |        3 |        1 | Covered |
+    | bin range_data[46]                             |        4 |        1 | Covered |
+    | bin range_data[47]                             |        4 |        1 | Covered |
+    | bin range_data[48]                             |        1 |        1 | Covered |
+    | bin range_data[49]                             |        5 |        1 | Covered |
+    | bin range_data[50]                             |        2 |        1 | Covered |
+    | bin range_data[51]                             |        4 |        1 | Covered |
+    | bin range_data[52]                             |        7 |        1 | Covered |
+    | bin range_data[53]                             |        7 |        1 | Covered |
+    | bin range_data[54]                             |        3 |        1 | Covered |
+    | bin range_data[55]                             |        3 |        1 | Covered |
+    | bin range_data[56]                             |        5 |        1 | Covered |
+    | bin range_data[57]                             |        3 |        1 | Covered |
+    | bin range_data[58]                             |        8 |        1 | Covered |
+    | bin range_data[59]                             |        3 |        1 | Covered |
+    | bin range_data[60]                             |        4 |        1 | Covered |
+    | bin range_data[61]                             |        5 |        1 | Covered |
+    | bin range_data[62]                             |        1 |        1 | Covered |
+    | bin range_data[63]                             |        7 |        1 | Covered |
+    ==================================================================================
+
+
++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++       DESIGN UNITS      ++++++++++
++++++++++++++++++++++++++++++++++++++++++++++
+
+
+CUMULATIVE SUMMARY
+=============================================
+|    Coverage Type    | Weight | Hits/Total |
+=============================================
+| Covergroup Coverage |      1 |   100.000% |
+|---------------------|--------|------------|
+| Types               |        |      1 / 1 |
+=============================================
+CUMULATIVE DESIGN-BASED COVERAGE: 100.000%
+COVERED DESIGN UNITS: 1 / 1
+FILES: 1
+
+
+CLASS - work.testbench_pkg/\testbench_pkg rand_sequence \
+
+
+    SUMMARY
+    =============================================
+    |    Coverage Type    | Weight | Hits/Total |
+    =============================================
+    | Covergroup Coverage |      1 |   100.000% |
+    |---------------------|--------|------------|
+    | Types               |        |      1 / 1 |
+    =============================================
+    WEIGHTED AVERAGE: 100.000%
+
+
+    COVERGROUP COVERAGE
+    ==================================================================================
+    |                   Covergroup                   |   Hits   |  Goal /  | Status  |
+    |                                                |          | At Least |         |
+    ==================================================================================
+    | TYPE /\package testbench_pkg\/rand_sequence/cg | 100.000% | 100.000% | Covered |
+    ==================================================================================
+    | INSTANCE <UNNAMED1>                            | 100.000% | 100.000% | Covered |
+    |------------------------------------------------|----------|----------|---------|
+    | COVERPOINT <UNNAMED1>::data                    | 100.000% | 100.000% | Covered |
+    |------------------------------------------------|----------|----------|---------|
+    | bin range_data[0]                              |        4 |        1 | Covered |
+    | bin range_data[1]                              |        8 |        1 | Covered |
+    | bin range_data[2]                              |        3 |        1 | Covered |
+    | bin range_data[3]                              |        4 |        1 | Covered |
+    | bin range_data[4]                              |        2 |        1 | Covered |
+    | bin range_data[5]                              |        2 |        1 | Covered |
+    | bin range_data[6]                              |        2 |        1 | Covered |
+    | bin range_data[7]                              |        3 |        1 | Covered |
+    | bin range_data[8]                              |        4 |        1 | Covered |
+    | bin range_data[9]                              |        4 |        1 | Covered |
+    | bin range_data[10]                             |        8 |        1 | Covered |
+    | bin range_data[11]                             |        7 |        1 | Covered |
+    | bin range_data[12]                             |        2 |        1 | Covered |
+    | bin range_data[13]                             |        3 |        1 | Covered |
+    | bin range_data[14]                             |        6 |        1 | Covered |
+    | bin range_data[15]                             |        4 |        1 | Covered |
+    | bin range_data[16]                             |        5 |        1 | Covered |
+    | bin range_data[17]                             |        3 |        1 | Covered |
+    | bin range_data[18]                             |        2 |        1 | Covered |
+    | bin range_data[19]                             |        4 |        1 | Covered |
+    | bin range_data[20]                             |        6 |        1 | Covered |
+    | bin range_data[21]                             |        3 |        1 | Covered |
+    | bin range_data[22]                             |        2 |        1 | Covered |
+    | bin range_data[23]                             |        4 |        1 | Covered |
+    | bin range_data[24]                             |        6 |        1 | Covered |
+    | bin range_data[25]                             |        3 |        1 | Covered |
+    | bin range_data[26]                             |        3 |        1 | Covered |
+    | bin range_data[27]                             |        5 |        1 | Covered |
+    | bin range_data[28]                             |        3 |        1 | Covered |
+    | bin range_data[29]                             |        5 |        1 | Covered |
+    | bin range_data[30]                             |        1 |        1 | Covered |
+    | bin range_data[31]                             |        3 |        1 | Covered |
+    | bin range_data[32]                             |        3 |        1 | Covered |
+    | bin range_data[33]                             |        4 |        1 | Covered |
+    | bin range_data[34]                             |        5 |        1 | Covered |
+    | bin range_data[35]                             |        5 |        1 | Covered |
+    | bin range_data[36]                             |        6 |        1 | Covered |
+    | bin range_data[37]                             |        7 |        1 | Covered |
+    | bin range_data[38]                             |        2 |        1 | Covered |
+    | bin range_data[39]                             |        1 |        1 | Covered |
+    | bin range_data[40]                             |        1 |        1 | Covered |
+    | bin range_data[41]                             |        3 |        1 | Covered |
+    | bin range_data[42]                             |        5 |        1 | Covered |
+    | bin range_data[43]                             |        4 |        1 | Covered |
+    | bin range_data[44]                             |        2 |        1 | Covered |
+    | bin range_data[45]                             |        3 |        1 | Covered |
+    | bin range_data[46]                             |        4 |        1 | Covered |
+    | bin range_data[47]                             |        4 |        1 | Covered |
+    | bin range_data[48]                             |        1 |        1 | Covered |
+    | bin range_data[49]                             |        5 |        1 | Covered |
+    | bin range_data[50]                             |        2 |        1 | Covered |
+    | bin range_data[51]                             |        4 |        1 | Covered |
+    | bin range_data[52]                             |        7 |        1 | Covered |
+    | bin range_data[53]                             |        7 |        1 | Covered |
+    | bin range_data[54]                             |        3 |        1 | Covered |
+    | bin range_data[55]                             |        3 |        1 | Covered |
+    | bin range_data[56]                             |        5 |        1 | Covered |
+    | bin range_data[57]                             |        3 |        1 | Covered |
+    | bin range_data[58]                             |        8 |        1 | Covered |
+    | bin range_data[59]                             |        3 |        1 | Covered |
+    | bin range_data[60]                             |        4 |        1 | Covered |
+    | bin range_data[61]                             |        5 |        1 | Covered |
+    | bin range_data[62]                             |        1 |        1 | Covered |
+    | bin range_data[63]                             |        7 |        1 | Covered |
+    ==================================================================================
+
+
