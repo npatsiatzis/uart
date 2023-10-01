@@ -28,9 +28,9 @@ module wb_regs
     );
 
     logic [G_WORD_WIDTH -1 : 0] w_tx_reg;
-    /* verilator lint_off UNUSEDSIGNAL */
+    /* can use lint_off UNUSEDSIGNAL */
     logic f_is_data_to_tx;
-    /* verilator lint_on UNUSEDSIGNAL */
+    /* can use lint_on UNUSEDSIGNAL */
 
     //                  INTERFACE REGISTER MAP
 
