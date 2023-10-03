@@ -16,7 +16,7 @@ This document describes the requirements specification for a UART design.
 **Parity Error** : Error condition where the received data (+ parity) have a different number of ONES from which specified by the selected parity type.
 
 <p align="center">
-  <img src="https://github.com/npatsiatzis/uart/blob/main/docs/img/uart_core.drawio.svg" width = "400" height = "200" />
+  <img src="https://github.com/npatsiatzis/uart/blob/main/docs/img/uart_core.drawio.svg" width = "600" height = "300" />
 </p>
 
 THe CPU interface in this case is the Wishbone B4 interface.
