@@ -1,5 +1,7 @@
 ## Verification Plan
 This document describes the verification plan for the UART design.
+
+
 ***Note*** : For the purpose of verification, the the tx and rx signals are crosscoupled which means that the receiver is connected to the transmitter. 
 
 #### Definitions
