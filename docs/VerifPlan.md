@@ -4,6 +4,7 @@ This document describes the verification plan for the UART design.
 
 #### Definitions
 **BFM** : A Bus Functional Model emulates the operation of an interface.
+
 **transaction** : A transaction describes a high-level interace operation, e.g. WRITE DATA on ADDRESS at specified time.
 
 #### Compliance Plan
