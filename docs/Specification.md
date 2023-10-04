@@ -2,7 +2,7 @@
 ## Requirements Specification
 
 
-### 1. Scope
+### 1. SCOPE
 
 1. **Scope**
 
@@ -15,7 +15,7 @@
    This document defines the requirements for a hardware design.
 
 
-### 2. Definitions
+### 2. DEFINITIONS
 
 1. **Word**
 
@@ -42,7 +42,7 @@
    Error condition where the received data (+ parity) have a different number of ONES from which specified by the selected parity type.
    
 
-### 3. Applicable Documents
+### 3. APPLICABLE DOCUMENTS 
 
 1. **Government Documents**
 
@@ -52,7 +52,7 @@
    None
 
 
-### 4. Architectural Overview
+### 4. ARCHITECTURAL OVERVIEW
 
 1. **Introduction**
 
@@ -69,7 +69,7 @@
    
     The UART can be applied to a variety of system configurations. Most often, it is used as a hardwired interface between two subsystems.
 
-### 5. Physical Layer
+### 5. PHYSICAL LAYER
 
 * Serial Interface
     1. tx, Transmit Data
@@ -85,7 +85,7 @@
     7. clk, system clock
     8. rst, system reset, synchronous active high
 
-### 6. Protocol Layer
+### 6. PROTOCOL LAYER
 
 A message consists of the following bits transmitted according to the baud rate:
    
@@ -94,7 +94,7 @@ A message consists of the following bits transmitted according to the baud rate:
 3. Parity Bitt
 4. Stop Bit 
 
-### 7. Robustness
+### 7. ROBUSTNESS
 
 The errors below, when identified should be reported.
 1. Framing Error
@@ -102,7 +102,7 @@ The errors below, when identified should be reported.
 
 These errors should be reported to the interrupt registers (not implemented yet). Instead, if such errors occur, I create an interrupt (output signal) signifying this condition.
 
-### 8. Hardware and Software
+### 8. HARDWARE AND SOFTWARE
 
 1. **Parameterization**
 
@@ -127,7 +127,7 @@ These errors should be reported to the interrupt registers (not implemented yet)
 
    (* Obviously, only the bare minimum of UART features are implemented, namely the transmit and receive   functionality).
 
-### 9. Performance
+### 9. PERFORMANCE
 
 1. **Frequency**
 1. **Power Dissipation**
@@ -138,9 +138,8 @@ These errors should be reported to the interrupt registers (not implemented yet)
 
    The design shall be adaptable to any technology because the design shall be portable and defined in an HDL.
 
-### 10. Testability
-
+### 10. TESTABILITY
 None required.
 
-### 11. Mechanical
+### 11. MECHANICAL
 Does not apply.
