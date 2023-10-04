@@ -72,7 +72,9 @@ The errors below, when identified should be reported.
 These errors should be reported to the interrupt registers (not implemented yet). Instead, if such errors occur, I create an interrupt (output signal) signifying this condition.
 
 ### 8. Hardware and Software
-1. **Parameterization** : 
+1. **Parameterization**
+The UART shall provide for the following parameters used for the definition of the implemented hardware during hardware build:
+
 | Param. Name | Description |
 | :------: | :------: |
 | word width | width of the CPU data interface |
@@ -81,7 +83,9 @@ These errors should be reported to the interrupt registers (not implemented yet)
 | oversample rate | rate for which the receiver oversamples the line (i.e multiple of the baud rate) |
 | parity type | even or odd parity of the word |
 
-1. **CPU interface** : 
+1. **CPU interface**
+The CPU shall write into the UART data for transmission and also read from the receive register.
+
 | addr | we (+ stb) | Description |
 | :------: | :------: | :------: | 
 | 0 | 1 | set word to transmit |
