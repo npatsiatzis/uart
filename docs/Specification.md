@@ -9,7 +9,7 @@
    This document establishes the requirements for an Intellectual Property (IP) that provides a UART function.
 1. **Purpose**
  
-   These requirements shall apply to a FizzBuzz core with a simple interface for inclusion as a component.
+   These requirements shall apply to a UART core with a simple interface for inclusion as a component.
 1. **Classification**
     
    This document defines the requirements for a hardware design.
